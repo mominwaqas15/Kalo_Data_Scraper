@@ -13,13 +13,13 @@ def main():
     try:
         attempt_login(driver)
         
-        # Example usage
-        shop_info = scrape_shop_info(driver, 'https://kalodata.com/shop')
-        save_to_csv(shop_info, 'shops_info.csv')
+        # # Example usage
+        # shop_info = scrape_shop_info(driver, 'https://kalodata.com/shop')
+        # save_to_csv(shop_info, 'shops_info.csv')
 
-        scrape_products_info(driver, 'https://kalodata.com/product', 'products_info.csv')
+        # scrape_products_info(driver, 'https://kalodata.com/product', 'products_info.csv')
         
-        scrape_product_details(driver, 'https://kalodata.com/product/detail?id=1729477193790165820&language=en-US&currency=USD&region=US&dateRange=%5B%222024-08-03%22%2C%222024-08-09%22%5D&cateValue=%5B%5D', 'product_details.csv')
+        scrape_product_details(driver, 'https://kalodata.com/product/detail?id=1729477193790165820&language=en-US&currency=USD&region=US&dateRange=%5B%222024-08-03%22%2C%222024-08-09%22%5D&cateValue=%5B%5D', 'Product_Details.csv')
 
     finally:
         driver.quit()

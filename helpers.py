@@ -18,7 +18,7 @@ def attempt_login(driver):
 
     login_button = driver.find_element(By.XPATH, '//button[@type="submit" and contains(@class, "login_submit-btn")]')
     login_button.click()
-
+    time.sleep(0.5)
     # # Wait for login to complete by checking the presence of some element on the landing page after login
     # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'some_element_on_homepage_after_login')))
 
@@ -111,54 +111,54 @@ def scrape_product_details(driver, url, output_csv):
     details = {}
     
     try:
-        # Wait until the product name element is present
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[1]/div')))
-        
-        # Product name
         details['Product Name'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[1]/div').text
-        
-        # Shipped from
         details['Shipped From'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[2]/div').text
-        
-        # Product category
         details['Product Category'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[3]/div[2]').text
-        
-        # Product price
         details['Product Price'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[6]/div').text
-        
-        # 30 days lowest price
         details['30 Days Lowest Price'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[7]/div/span').text
-        
-        # Shop name
         details['Shop Name'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[4]/div[2]/div[2]').text
-        
-        # Revenue in last 7 days
         details['Revenue in Last 7 Days'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[1]/div[2]/div/div/div/div').text
-        
-        # Number of times product sold
         details['Number of Times Product Sold'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[2]/div[2]/div/div/div/div').text
-        
-        # Avg unit price
         details['Avg Unit Price'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[3]/div[2]/div/div/div/div').text
-        
-        # Live Revenue
         details['Live Revenue'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[1]/div[2]/div/div/div/div').text
-        
-        # Video Revenue
         details['Video Revenue'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[2]/div[2]/div/div/div/div').text
-        
-        # Shopping mall revenue
+        details['Earliest Date Recorded'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[2]/div[1]/span').text
         details['Shopping Mall Revenue'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[3]/div[2]/div/div/div/div').text
 
+        # Tiktok links
+        original_window = driver.current_window_handle
+        try:
+            tiktok_link_element = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[4]')
+            tiktok_link_element.click()
+            WebDriverWait(driver, 10).until(EC.new_window_is_opened)
+            windows = driver.window_handles
+            driver.switch_to.window(windows[-1])
+            tiktok_link = driver.current_url
+            details['TikTok Link'] = tiktok_link
+            driver.close()
+            driver.switch_to.window(original_window)
+        except NoSuchElementException as e:
+            print(f"Error finding TikTok link element: {e}")
+
+        # Tiktok links
+        try:
+            image_elements = driver.find_elements(By.XPATH, '//*[@class="images scrollbar flex flex-col pt-0 h-[168px] overflow-y-auto  gap-2"]/div')
+            image_urls = []
+            for image_element in image_elements:
+                style_attribute = image_element.get_attribute('style')
+                url = style_attribute.split('url("')[1].split('");')[0]
+                image_urls.append(url)
+            details['Image URLs'] = ','.join(image_urls)
+        except NoSuchElementException as e:
+            print(f"Error finding image elements: {e}")
+
     except NoSuchElementException as e:
-        print(f"Error finding element: {e}")
+        print(f"Error while scraping: {e}")   
     
-    # Save the scraped data to a CSV file
-    with open('Cakes_cover.csv', mode='w', newline='', encoding='utf-8') as file:
+    with open(output_csv, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
-        # Write header
         writer.writerow(details.keys())
-        # Write data
         writer.writerow(details.values())
 
-    return details                
+    return details               
