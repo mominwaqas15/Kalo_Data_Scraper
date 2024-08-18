@@ -19,7 +19,7 @@ def main():
 
         # scrape_products_info(driver, 'https://kalodata.com/product', 'products_info.csv')
         
-        scrape_product_details(driver, 'https://kalodata.com/product/detail?id=1729477193790165820&language=en-US&currency=USD&region=US&dateRange=%5B%222024-08-03%22%2C%222024-08-09%22%5D&cateValue=%5B%5D', 'Product_Details.csv')
+        scrape_product_details(driver, 'https://kalodata.com/product/detail?id=1729418496836080191&language=en-US&currency=USD&region=US&dateRange=%5B%222024-08-11%22%2C%222024-08-17%22%5D&cateValue=%5B%5D', 'Product_Details.csv')
 
     finally:
         driver.quit()
