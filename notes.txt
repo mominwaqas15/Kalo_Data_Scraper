@@ -1,0 +1,8 @@
+Momin
+
+1. The Creator profile pic cannot be scraped. KaloData doesn't allow it.
+
+2. The scrape details function for products is not correct. It does not properly scrape all dynamic data elements like revenue total and revenue per day. Figure it Out.
+
+Arham:
+

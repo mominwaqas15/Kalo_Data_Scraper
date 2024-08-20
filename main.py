@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from helpers import attempt_login, save_to_csv, scrape_shop_info, scrape_products_info, scrape_product_details
+from helpers import attempt_login, scrape_product_details, scrape_creator_details
 
 load_dotenv()
 
@@ -19,7 +19,9 @@ def main():
 
         # scrape_products_info(driver, 'https://kalodata.com/product', 'products_info.csv')
         
-        scrape_product_details(driver, 'https://kalodata.com/product/detail?id=1729418496836080191&language=en-US&currency=USD&region=US&dateRange=%5B%222024-08-11%22%2C%222024-08-17%22%5D&cateValue=%5B%5D', 'Product_Details.csv')
+        #scrape_product_details(driver, 'https://kalodata.com/product/detail?id=1729418496836080191&language=en-US&currency=USD&region=US&dateRange=%5B%222024-08-11%22%2C%222024-08-17%22%5D&cateValue=%5B%5D', 'Product_Details.csv')
+
+        scrape_creator_details(driver, 'https://kalodata.com/creator/detail?id=7319965202961728555&language=en-US&currency=USD&region=US&dateRange=%5B%222024-08-12%22%2C%222024-08-18%22%5D&cateValue=%5B%5D', 'Creator_Details.csv')
 
     finally:
         driver.quit()
