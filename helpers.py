@@ -105,9 +105,8 @@ def save_to_csv(data, filename):
 #                 print(f"Error occurred for row {index}: {e}")
 
 def scrape_product_details(driver, url, output_csv):
-
     driver.get(url)
-    print("\n\nstarted scraping\n\n")
+    print("\n\nstarted scraping product details\n\n")
     details = {}
 
     try:
@@ -134,11 +133,16 @@ def scrape_product_details(driver, url, output_csv):
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[1]/div[2]/div/div/div/div')))
 
             details[f'Revenue in {range_name}'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[1]/div[2]/div/div/div/div').text
-            details[f'Number of Times Product Sold in {range_name}'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[2]/div[2]/div/div/div/div').text
+            details[f'Revenue per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[1]/div[3]').text
+            details[f'Number of products sold in {range_name}'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[2]/div[2]/div/div/div/div').text
+            details[f'Number of products sold per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[2]/div[3]').text
             details[f'Avg Unit Price in {range_name}'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[3]/div[2]/div/div/div/div').text
             details[f'Live Revenue in {range_name}'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[1]/div[2]/div/div/div/div').text
+            details[f'Live Revenue per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[1]/div[3]').text
             details[f'Video Revenue in {range_name}'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[2]/div[2]/div/div/div/div').text
+            details[f'Video Revenue per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[2]/div[3]').text
             details[f'Shopping Mall Revenue in {range_name}'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[3]/div[2]/div/div/div/div').text
+            details[f'Shopping Mall Revenue per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[3]/div[3]').text
 
         # Scrape other details that don't change with time range
         details['Earliest Date Recorded'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[2]/div[1]/span').text
@@ -146,6 +150,7 @@ def scrape_product_details(driver, url, output_csv):
         # TikTok links and images
         original_window = driver.current_window_handle
         try:
+            print('\n\nscraping tiktok link')
             tiktok_link_element = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[4]')
             tiktok_link_element.click()
             WebDriverWait(driver, 10).until(EC.new_window_is_opened)
@@ -159,6 +164,7 @@ def scrape_product_details(driver, url, output_csv):
             print(f"Error finding TikTok link element: {e}")
 
         try:
+            print('\n\nscraping product images')
             image_elements = driver.find_elements(By.XPATH, '//*[@class="images scrollbar flex flex-col pt-0 h-[168px] overflow-y-auto  gap-2"]/div')
             image_urls = []
             for image_element in image_elements:
