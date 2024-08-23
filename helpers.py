@@ -307,3 +307,104 @@ def scrape_creator_details(driver, url, output_csv):
 
     except Exception as e:
         print(f"Error in scrape_creator_details: {e}")   
+
+def scrape_live_stream_details(driver, url, output_csv):
+    driver.get(url)
+    print("\n\nstarted scraping live details")
+    details = {}    
+
+    try:
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div/div/div[1]/div[2]/div/div[1]'))
+        )
+
+        try:
+            details['Live stream name'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div/div/div[1]/div[2]/div/div[1]').text
+        except:
+            details['Live stream name'] = 'N/A'
+
+        try:
+            details['Number of products'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div/div/div[1]/div[2]/div/div[2]/div[2]').text
+        except:
+            details['Number of products'] = 'N/A'
+
+        try:
+            details['Top 3 categories'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div/div/div[1]/div[2]/div/div[3]/div[2]/div').text
+        except:
+            details['Top 3 categories'] = 'N/A' 
+
+        try:
+            details['Live stream time'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div/div/div[1]/div[2]/div/div[4]/div/div[2]/span').text
+        except:
+            details['Live stream time'] = 'N/A'
+
+        try:
+            details['Stream duration'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div/div/div[1]/div[2]/div/div[4]/div/div[2]/div/div').text
+        except:
+            details['Stream duration'] = 'N/A'  
+
+        try:
+            details['Creator name'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div/div/div[2]/div[2]/div[2]/div[2]/div[1]').text
+        except:
+            details['Creator name'] = 'N/A'                                   
+
+        try:
+            details['Revenue'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div[1]/div[2]/div/div/div/div').text
+        except:
+            details['Revenue'] = 'N/A'            
+
+        try:
+            details['Revenue per minute'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div[1]/div[3]').text
+        except:
+            details['Revenue per minute'] = 'N/A'
+
+        try:
+            details['Online viewers'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div[2]/div[2]/div/div/div/div').text
+        except:
+            details['Online viewers'] = 'N/A' 
+
+        try:
+            details['Online viewers per minute'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div[2]/div[3]').text
+        except:
+            details['Online viewers per minute'] = 'N/A'
+
+        try:
+            details['Views'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div[3]/div[2]/div/div/div/div').text
+        except:
+            details['Views'] = 'N/A' 
+
+        try:
+            details['Views per minute'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div[3]/div[3]').text
+        except:
+            details['Views per minute'] = 'N/A' 
+
+        try:
+            details['Items sold'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div[4]/div[2]/div/div/div/div').text
+        except:
+            details['Items sold'] = 'N/A' 
+
+        try:
+            details['Items sold per minute'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div[4]/div[3]').text
+        except:
+            details['Items sold per minute'] = 'N/A'                                                 
+
+        try:
+            details['Average unit price'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[2]/div[2]/div[1]/div[1]/div/div/div/div/div[5]/div[2]/div/div/div/div').text
+        except:
+            details['Average unit price'] = 'N/A'   
+
+        try:
+            with open(output_csv, 'a', newline='', encoding='utf-8') as csvfile:
+                fieldnames = details.keys()
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+                # Write header only if file is empty
+                if csvfile.tell() == 0:
+                    writer.writeheader()
+
+                writer.writerow(details)
+        except Exception as e:
+            print(f"Error writing to CSV: {e}")
+
+    except Exception as e:
+        print(f"Error in scraping live stream details: {e}")                      
