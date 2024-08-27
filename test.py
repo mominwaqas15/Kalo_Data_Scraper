@@ -2,20 +2,22 @@ import os
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from helpers import attempt_login, scrape_product_details, scrape_creator_details, scrape_live_stream_details, scrape_all_products
+from selenium.webdriver.common.by import By
+import time
+from helpers import attempt_login, scrape_product_details, scrape_creator_details, scrape_live_stream_details
 
 load_dotenv()
 
+def test(driver, url):
+    driver.get(url)
+    time.sleep(3)
+    print("\n\nstarted scraping product details\n\n")
+    # details = {}
+    text = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[4]/div').text
+    print(text)
+
 def main():
-
-    # chrome_options = Options()
-    # chrome_options.add_argument("--headless")  # Run in headless mode
-    # chrome_options.add_argument("--no-sandbox")  # Optional: Avoid issues with sandboxing
-    # chrome_options.add_argument("--disable-dev-shm-usage")  # Optional: Overcome resource limits
-
     service = Service(os.getenv("PATH_TO_CHROMEDRIVER"))
-    # driver = webdriver.Chrome(service=service, options=chrome_options)
     driver = webdriver.Chrome(service=service)
 
     try:
@@ -33,7 +35,7 @@ def main():
 
         #scrape_live_stream_details(driver, 'https://kalodata.com/livestream/detail?id=7404153601582517038&language=en-US&currency=USD&region=US&dateRange=%5B%222024-08-16%22%2C%222024-08-22%22%5D&cateValue=%5B%5D', 'Live_Stream_Details.csv')
 
-        scrape_all_products(driver, 'https://www.kalodata.com/product', "Products_Data.csv")
+        test(driver, 'https://www.kalodata.com/product/detail?id=1729527313880355335&language=en-US&currency=USD&region=US&dateRange=%5B%222024-08-20%22%2C%222024-08-26%22%5D&cateValue=%5B%5D')
 
     finally:
         driver.quit()
