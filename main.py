@@ -9,14 +9,15 @@ load_dotenv()
 
 def main():
 
-    # chrome_options = Options()
-    # chrome_options.add_argument("--headless")  # Run in headless mode
-    # chrome_options.add_argument("--no-sandbox")  # Optional: Avoid issues with sandboxing
-    # chrome_options.add_argument("--disable-dev-shm-usage")  # Optional: Overcome resource limits
-
     service = Service(os.getenv("PATH_TO_CHROMEDRIVER"))
-    # driver = webdriver.Chrome(service=service, options=chrome_options)
-    driver = webdriver.Chrome(service=service)
+    
+    chrome_options = Options()
+    # chrome_options.add_argument("--headless")  # Enable headless mode
+    chrome_options.add_argument("--window-size=1920,1080")  # Set a large window size
+    chrome_options.add_argument("--start-maximized")  # Maximized in case it's not headless
+
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+    # driver = webdriver.Chrome(service=service)
 
     try:
         attempt_login(driver)
