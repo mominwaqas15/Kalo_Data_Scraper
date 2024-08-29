@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from helpers import attempt_login, scrape_product_details, scrape_creator_details, scrape_live_stream_details, scrape_all_products
+from helpers import attempt_login, scrape_product_details, scrape_creator_details, scrape_live_stream_details, scrape_all_products, scrape_500_products
 
 load_dotenv()
 
@@ -34,7 +34,10 @@ def main():
 
         #scrape_live_stream_details(driver, 'https://kalodata.com/livestream/detail?id=7404153601582517038&language=en-US&currency=USD&region=US&dateRange=%5B%222024-08-16%22%2C%222024-08-22%22%5D&cateValue=%5B%5D', 'Live_Stream_Details.csv')
 
-        scrape_all_products(driver, 'https://www.kalodata.com/product', "Products_Data.csv")
+
+        # scrape_all_products(driver, 'https://www.kalodata.com/product', "Data.csv")
+
+        scrape_500_products(driver, 'https://www.kalodata.com/product', "Products.csv")
 
     finally:
         driver.quit()

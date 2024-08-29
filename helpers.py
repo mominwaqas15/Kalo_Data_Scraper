@@ -106,12 +106,12 @@ def save_to_csv(data, filename):
 
 def scrape_product_details(driver, url):
     # driver.get(url)
-    print("\n\nstarted scraping product details\n\n")
+    # print("\n\nstarted scraping product details\n\n")
     details = {}
+    # time.sleep()
 
     try:
-        time.sleep(1)
-        # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[1]/div')))
+        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[1]/div')))
         details['Product Name'] = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[1]/div').text
         details['Shipped From'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[2]/div').text
         details['Product Category'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[3]/div[2]').text
@@ -127,17 +127,24 @@ def scrape_product_details(driver, url):
             'Last 180 Days': '//*[@id="root"]/div/div[2]/div[1]/div/div[3]/div[2]/div/div/div[2]/div/div[2]/div/label[5]'
         }
 
+        driver.execute_script("window.scrollTo(0, 300);")
         for range_name, range_xpath in time_ranges.items():
             driver.find_element(By.XPATH, range_xpath).click()
 
             # Wait for the content to update after clicking
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[1]/div[2]/div[1]')))
-            time.sleep(0.5)
+            try:
+                WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[1]/div[2]/div[1]')))
+            except:
+                driver.refresh()                
 
             details[f'Revenue in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[1]/div[2]/div[1]').text
             details[f'Revenue per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[1]/div[2]/div[2]').text
             details[f'Number of products sold in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[2]/div[2]/div[1]/div/div/div/div').text
             details[f'Number of products sold per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[2]/div[2]/div[2]').text
+            try:
+                WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[3]/div[2]/div[1]/div/div/div/div')))
+            except:
+                driver.refresh()                
             details[f'Avg Unit Price in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[3]/div[2]/div[1]/div/div/div/div').text
             details[f'Live Revenue in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[1]/div[2]/div[1]/div/div/div/div').text
             details[f'Live Revenue per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[1]/div[2]/div[2]').text
@@ -146,13 +153,14 @@ def scrape_product_details(driver, url):
             details[f'Shopping Mall Revenue in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[3]/div[2]/div[1]/div/div/div/div').text
             details[f'Shopping Mall Revenue per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[3]/div[2]/div[2]').text
 
+        driver.execute_script("window.scrollTo(0, -300);")
         # # Scrape other details that don't change with time range
         details['Earliest Date Recorded'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[2]/div[1]/span').text
 
         # TikTok links and images
         original_window = driver.current_window_handle
         try:
-            print('\n\nscraping tiktok link')
+            # print('\n\nscraping tiktok link')
             tiktok_link_element = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[7]/div')
             tiktok_link_element.click()
             WebDriverWait(driver, 10).until(EC.new_window_is_opened)
@@ -166,7 +174,7 @@ def scrape_product_details(driver, url):
             print(f"Error finding TikTok link element: {e}")
 
         try:
-            print('\n\nscraping product images')
+            # print('\n\nscraping product images')
             image_elements = driver.find_elements(By.XPATH, '//*[@class="images scrollbar flex flex-col pt-0 h-[168px] overflow-y-auto  gap-2"]/div')
             image_urls = []
             for image_element in image_elements:
@@ -191,6 +199,7 @@ def scrape_product_details(driver, url):
 def scrape_all_products(driver, url, output_csv):
     # Visit the URL
     driver.get(url)
+    count = 0
 
     # Scroll to the bottom of the page to reveal more content
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -213,11 +222,11 @@ def scrape_all_products(driver, url, output_csv):
         return
 
     # Find all products
-    time.sleep(1)
+    time.sleep(.5)
     product_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
     product_rows = product_rows[1:]  # Exclude the header row
 
-    print(f"Total number of products found (excluding header): {len(product_rows)}")
+    # print(f"Total number of products found (excluding header): {len(product_rows)}")
 
     original_window = driver.current_window_handle  # Store the current window handle
     header = ['Product Name', 'Shipped From', 'Product Category', 'Product Price','30 Days Lowest Price', 'Shop Name', 'Revenue in Yesterday','Revenue per day in Yesterday', 'Number of products sold in Yesterday','Number of products sold per day in Yesterday','Avg Unit Price in Yesterday', 'Live Revenue in Yesterday','Live Revenue per day in Yesterday', 'Video Revenue in Yesterday','Video Revenue per day in Yesterday','Shopping Mall Revenue in Yesterday','Shopping Mall Revenue per day in Yesterday', 'Revenue in Last 7 Days','Revenue per day in Last 7 Days','Number of products sold in Last 7 Days','Number of products sold per day in Last 7 Days','Avg Unit Price in Last 7 Days', 'Live Revenue in Last 7 Days','Live Revenue per day in Last 7 Days', 'Video Revenue in Last 7 Days','Video Revenue per day in Last 7 Days','Shopping Mall Revenue in Last 7 Days','Shopping Mall Revenue per day in Last 7 Days','Revenue in Last 30 Days', 'Revenue per day in Last 30 Days','Number of products sold in Last 30 Days','Number of products sold per day in Last 30 Days','Avg Unit Price in Last 30 Days', 'Live Revenue in Last 30 Days','Live Revenue per day in Last 30 Days', 'Video Revenue in Last 30 Days','Video Revenue per day in Last 30 Days','Shopping Mall Revenue in Last 30 Days','Shopping Mall Revenue per day in Last 30 Days','Revenue in Last 90 Days', 'Revenue per day in Last 90 Days','Number of products sold in Last 90 Days','Number of products sold per day in Last 90 Days','Avg Unit Price in Last 90 Days', 'Live Revenue in Last 90 Days','Live Revenue per day in Last 90 Days', 'Video Revenue in Last 90 Days','Video Revenue per day in Last 90 Days','Shopping Mall Revenue in Last 90 Days','Shopping Mall Revenue per day in Last 90 Days','Revenue in Last 180 Days', 'Revenue per day in Last 180 Days','Number of products sold in Last 180 Days','Number of products sold per day in Last 180 Days','Avg Unit Price in Last 180 Days', 'Live Revenue in Last 180 Days','Live Revenue per day in Last 180 Days','Video Revenue in Last 180 Days','Video Revenue per day in Last 180 Days','Shopping Mall Revenue in Last 180 Days','Shopping Mall Revenue per day in Last 180 Days','Earliest Date Recorded', 'TikTok Link', 'Image URLs']
@@ -228,11 +237,13 @@ def scrape_all_products(driver, url, output_csv):
 
     # Loop through each product
         for index, product in enumerate(product_rows[:50], start=1):
-            print(f"\nProcessing product {index}/{len(product_rows)}")
+            count = count + 1
+            # print(f"\nProcessing product {index}/{len(product_rows)}")
 
             # Click on the product to open in a new tab
             product.click()
 
+            print(f'processing product: {count}')
             # Wait for the new tab to open and switch to it
             WebDriverWait(driver, 10).until(EC.new_window_is_opened)
             new_tab = [window for window in driver.window_handles if window != original_window][0]
@@ -243,7 +254,7 @@ def scrape_all_products(driver, url, output_csv):
             try:
                 data = scrape_product_details(driver, product_url)
             except Exception as e:
-                print(f"Error scraping product {index}: {e}")
+                print(f"Error scraping product {count}: {e}")
                 # Fill the row with "Not scraped" if there's an error
                 data = {field: 'Not scraped' for field in header}
 
@@ -255,6 +266,101 @@ def scrape_all_products(driver, url, output_csv):
             driver.switch_to.window(original_window)
 
     print("\nFinished scraping all products.")          
+
+def scrape_500_products(driver, url, output_csv):
+    # Visit the URL
+    driver.get(url)
+    count = 0
+
+    # Scroll to the bottom of the page to reveal more content
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    # time.sleep(1)  # Give time for content to load
+
+    # Click on the specified elements
+    try:
+        element_to_click1 = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div/div[1]'))
+        )
+        element_to_click1.click()
+
+        element_to_click2 = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div/div[2]/div/div/div/div/div/div[3]/div'))
+        )
+        element_to_click2.click()
+
+    except TimeoutException:
+        print("The elements to show 50 products on page were not found.")
+        return
+
+    header = ['Product Name', 'Shipped From', 'Product Category', 'Product Price','30 Days Lowest Price', 'Shop Name', 'Revenue in Yesterday','Revenue per day in Yesterday', 'Number of products sold in Yesterday','Number of products sold per day in Yesterday','Avg Unit Price in Yesterday', 'Live Revenue in Yesterday','Live Revenue per day in Yesterday', 'Video Revenue in Yesterday','Video Revenue per day in Yesterday','Shopping Mall Revenue in Yesterday','Shopping Mall Revenue per day in Yesterday', 'Revenue in Last 7 Days','Revenue per day in Last 7 Days','Number of products sold in Last 7 Days','Number of products sold per day in Last 7 Days','Avg Unit Price in Last 7 Days', 'Live Revenue in Last 7 Days','Live Revenue per day in Last 7 Days', 'Video Revenue in Last 7 Days','Video Revenue per day in Last 7 Days','Shopping Mall Revenue in Last 7 Days','Shopping Mall Revenue per day in Last 7 Days','Revenue in Last 30 Days', 'Revenue per day in Last 30 Days','Number of products sold in Last 30 Days','Number of products sold per day in Last 30 Days','Avg Unit Price in Last 30 Days', 'Live Revenue in Last 30 Days','Live Revenue per day in Last 30 Days', 'Video Revenue in Last 30 Days','Video Revenue per day in Last 30 Days','Shopping Mall Revenue in Last 30 Days','Shopping Mall Revenue per day in Last 30 Days','Revenue in Last 90 Days', 'Revenue per day in Last 90 Days','Number of products sold in Last 90 Days','Number of products sold per day in Last 90 Days','Avg Unit Price in Last 90 Days', 'Live Revenue in Last 90 Days','Live Revenue per day in Last 90 Days', 'Video Revenue in Last 90 Days','Video Revenue per day in Last 90 Days','Shopping Mall Revenue in Last 90 Days','Shopping Mall Revenue per day in Last 90 Days','Revenue in Last 180 Days', 'Revenue per day in Last 180 Days','Number of products sold in Last 180 Days','Number of products sold per day in Last 180 Days','Avg Unit Price in Last 180 Days', 'Live Revenue in Last 180 Days','Live Revenue per day in Last 180 Days','Video Revenue in Last 180 Days','Video Revenue per day in Last 180 Days','Shopping Mall Revenue in Last 180 Days','Shopping Mall Revenue per day in Last 180 Days','Earliest Date Recorded', 'TikTok Link', 'Image URLs']
+
+    with open(output_csv, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.DictWriter(file, fieldnames=header)
+        writer.writeheader()
+
+        # Continue scraping until no more pages
+        while True:
+            # Find all products
+            time.sleep(.5)
+            product_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
+            product_rows = product_rows[1:]  # Exclude the header row
+
+            print(f"Total number of products found (excluding header): {len(product_rows)}")
+
+            original_window = driver.current_window_handle  # Store the current window handle
+
+            # Loop through each product
+            for index, product in enumerate(product_rows[:50], start=1):
+                count = count + 1
+                # print(f"\nProcessing product {index}/{len(product_rows)}")
+                print(f'processing product: {count}')
+
+                # Click on the product to open in a new tab
+                product.click()
+
+                # Wait for the new tab to open and switch to it
+                WebDriverWait(driver, 10).until(EC.new_window_is_opened)
+                new_tab = [window for window in driver.window_handles if window != original_window][0]
+                driver.switch_to.window(new_tab)
+
+                # Scrape the product details
+                product_url = driver.current_url
+                try:
+                    data = scrape_product_details(driver, product_url)
+                except Exception as e:
+                    print(f"Error scraping product {count}: {e}")
+                    # Fill the row with "Not scraped" if there's an error
+                    data = {field: 'Not scraped' for field in header}
+
+                # Write the details to CSV
+                writer.writerow(data)
+
+                # Close the current tab and switch back to the original tab
+                driver.close()
+                driver.switch_to.window(original_window)
+
+            try:
+                # Try to find and click the 'Next Page' button with the first XPath
+                next_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[9]/button'))
+                )
+                next_button.click()
+            except TimeoutException:
+                print("First 'Next Page' button not found or not clickable.")
+                try:
+                    # Try to find and click the 'Next Page' button with the second XPath
+                    next_button = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[11]/button'))
+                    )
+                    next_button.click()
+                except TimeoutException:
+                    print("No more pages to scrape or 'Next Page' button not found.")
+                    break  # Exit the loop if neither button is found or clickable
+
+            print("Moving to the next page...")
+
+    print("\nFinished scraping all products.")
+
 
 def scrape_creator_details(driver, url, output_csv):
     driver.get(url)
