@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException, InvalidSessionIdException, TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 
-def scrape_creator_details(driver, url, output_csv):
+def scrape_creator_details(driver, url):
     # driver.get(url)
     # print("\n\nstarted scraping creator details\n\n")
     details = {}
@@ -47,12 +47,16 @@ def scrape_creator_details(driver, url, output_csv):
             details['Debut Time'] = 'N/A'
 
         try:
-            details['Products in Last 30 Days'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div/div[1]/div[1]/div[2]/div[3]/div/div[2]/div[3]/div').text
+            details['creators in Last 30 Days'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div/div[1]/div[1]/div[2]/div[3]/div/div[2]/div[3]/div').text
         except:
-            details['Products in Last 30 Days'] = 'N/A'
+            details['creators in Last 30 Days'] = 'N/A'
 
         try:
-            details['Bio'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div/div[1]/div[1]/div[3]/div/div[2]').text
+            bio = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div/div[1]/div[1]/div[3]/div/div[2]').text
+            if bio is None:
+                details['Bio'] = "N/A"
+            else:
+                details['Bio'] = bio                
         except:
             details['Bio'] = 'N/A'
 
@@ -93,31 +97,32 @@ def scrape_creator_details(driver, url, output_csv):
                 # Wait for page content to update
                 # Wait for the content to update after clicking
                 try:
-                    WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[1]/div[2]/div/div/div/div')))
+                    WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[1]/div[2]/div[1]/div/div/div/div')))
                 except:
                     driver.refresh()
                 
-                details[f'Revenue in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[1]/div[2]/div/div/div/div').text
-                details[f'Revenue per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[1]/div[3]').text
-                details[f'Live Revenue in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[2]/div[2]/div/div/div/div').text
-                details[f'Live Revenue per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[2]/div[3]').text
-                details[f'Video Revenue in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[3]/div[2]/div/div/div/div').text
-                details[f'Video Revenue per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[3]/div[3]').text
+                details[f'Revenue in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[1]/div[2]/div[1]/div/div/div/div').text
+                details[f'Revenue per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[1]/div[2]/div[2]').text
+                details[f'Live Revenue in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[2]/div[2]/div[1]/div/div/div/div').text
+                details[f'Live Revenue per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[2]/div[2]/div[2]').text
+                details[f'Video Revenue in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[3]/div[2]/div[1]/div/div/div/div').text
+                details[f'Video Revenue per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[3]/div[2]/div[2]').text
                 try:
-                    WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[4]/div[2]/div/div/div/div')))
+                    WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[4]/div[2]/div[1]/div/div/div/div')))
                 except:
                     driver.refresh()
                     time.sleep(.5)
-                details[f'Average unit price in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[4]/div[2]/div/div/div/div').text
-                details[f'Traffic live views in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[4]/div[1]/div[2]/div/div/div/div').text
-                details[f'Traffic live views per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[4]/div[1]/div[3]').text
-                details[f'Traffic video views in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[4]/div[2]/div[2]/div/div/div/div').text
-                details[f'Traffic video views per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[4]/div[2]/div[3]').text
-                details[f'New followers in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[4]/div[3]/div[2]/div/div/div/div').text
-                details[f'New followers per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[4]/div[3]/div[3]').text
+                details[f'Average unit price in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[4]/div[2]/div[1]/div/div/div/div').text
+                details[f'Traffic live views in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[4]/div[1]/div[2]/div[1]/div/div/div/div').text
+                details[f'Traffic live views per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[4]/div[1]/div[2]/div[2]').text
+                details[f'Traffic video views in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[4]/div[2]/div[2]/div[1]/div/div/div/div').text
+                details[f'Traffic video views per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[4]/div[2]/div[2]/div[2]').text
+                details[f'New followers in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[4]/div[3]/div[2]/div[1]/div/div/div/div').text
+                details[f'New followers per day in {range_name}'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[4]/div[3]/div[2]/div[2]').text
             except Exception as e:
                 print(f"Error during scraping for range '{range_name}': {e}")
                 continue
+                
 
         # Write to CSV
         # try:
@@ -134,7 +139,9 @@ def scrape_creator_details(driver, url, output_csv):
         #     print(f"Error writing to CSV: {e}")
 
     except Exception as e:
-        print(f"Error in scrape_creator_details: {e}")   
+        print(f"Error in scrape_creator_details: {e}")  
+
+    return details         
 
 def scrape_creators(driver, url, output_csv):
     # Visit the URL
@@ -148,7 +155,7 @@ def scrape_creators(driver, url, output_csv):
     # Click on the specified elements
     try:
         element_to_click1 = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div/div[1]'))
+            EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div'))
         )
         element_to_click1.click()
 
@@ -158,11 +165,11 @@ def scrape_creators(driver, url, output_csv):
         element_to_click2.click()
 
     except TimeoutException:
-        print("The elements to show 50 products on page were not found.")
+        print("The elements to show 50 creators on page were not found.")
         return
 
     header = ['Username', 'Number of Followers', 'Debut Time',
-       'Products in Last 30 Days', 'Bio', 'Earliest Date Recorded',
+       'creators in Last 30 Days', 'Bio', 'Earliest Date Recorded',
        'Tiktok Link', 'Instagram Link', 'YouTube Link', 'Email address',
        'Revenue in Yesterday', 'Revenue per day in Yesterday',
        'Live Revenue in Yesterday', 'Live Revenue per day in Yesterday',
@@ -219,38 +226,49 @@ def scrape_creators(driver, url, output_csv):
         writer.writeheader()
 
         # Continue scraping until no more pages
-        while True:
-            # Find all products
+        while True:   
+            # Find all creators
             time.sleep(.5)
-            product_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
-            product_rows = product_rows[1:]  # Exclude the header row
+            creator_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
+            creator_rows = creator_rows[1:]  # Exclude the header row
 
-            print(f"Total number of products found (excluding header): {len(product_rows)}")
+            print(f"Total number of creators found (excluding header): {len(creator_rows)}")
 
             original_window = driver.current_window_handle  # Store the current window handle
 
-            # Loop through each product
-            for index, product in enumerate(product_rows[:50], start=1):
+            # Loop through each creator
+            for index, creator in enumerate(creator_rows[:50], start=1):
                 count = count + 1
-                # print(f"\nProcessing product {index}/{len(product_rows)}")
-                print(f'processing product: {count}')
+                if(count > 500):
+                    break
+                # print(f"\nProcessing creator {index}/{len(creator_rows)}")
+                print(f'processing Creator #{count}')
 
-                # Click on the product to open in a new tab
-                product.click()
+                # Click on the creator to open in a new tab
+                creator.click()
 
                 # Wait for the new tab to open and switch to it
                 WebDriverWait(driver, 10).until(EC.new_window_is_opened)
                 new_tab = [window for window in driver.window_handles if window != original_window][0]
                 driver.switch_to.window(new_tab)
 
-                # Scrape the product details
-                product_url = driver.current_url
+                # Scrape the creator details
+                data = {field: 'Not scraped' for field in header}
+                creator_url = driver.current_url
                 try:
-                    data = scrape_creator_details(driver, product_url)
+                    scraped_data = scrape_creator_details(driver, creator_url)
+                    try:
+                        if scraped_data is not None:
+                            # print(data)
+                            data.update(scraped_data)
+                        else:
+                            print("scrape_creator_details returned None")
+                    except: 
+                        print("data was retutned as None")                            
                 except Exception as e:
-                    print(f"Error scraping product {count}: {e}")
+                    print(f"Error scraping creator {count}: {e}")
                     # Fill the row with "Not scraped" if there's an error
-                    data = {field: 'Not scraped' for field in header}
+                    # data = {field: 'Not scraped' for field in header}
 
                 # Write the details to CSV
                 writer.writerow(data)
@@ -260,11 +278,12 @@ def scrape_creators(driver, url, output_csv):
                 driver.switch_to.window(original_window)
 
             try:
-                # Try to find and click the 'Next Page' button with the first XPath
-                next_button = WebDriverWait(driver, 1).until(
-                    EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[9]/button'))
-                )
-                next_button.click()
+                if(count < 500):
+                    # Try to find and click the 'Next Page' button with the first XPath
+                        next_button = WebDriverWait(driver, 1).until(
+                            EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[9]/button'))
+                        )
+                        next_button.click()
             except TimeoutException:
                 print("First 'Next Page' button not found or not clickable.")
                 try:
@@ -285,6 +304,4 @@ def scrape_creators(driver, url, output_csv):
                         print("No more pages to scrape or 'Next Page' button not found.")
                         break  # Exit the loop if neither button is found or clickable
 
-            print("Moving to the next page...")
-
-    print("\nFinished scraping all products.")        
+    print("\nFinished scraping all Creators.")        

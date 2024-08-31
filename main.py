@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-# from helpers import attempt_login, scrape_product_details, scrape_creator_details, scrape_live_stream_details, scrape_600_products
 from initial import attempt_login
 from products import scrape_product_details, scrape_products
 from creators import scrape_creator_details, scrape_creators
@@ -34,14 +33,16 @@ def main():
         
         # scrape_product_details(driver, 'https://www.kalodata.com/product/detail?id=1729527313880355335&language=en-US&currency=USD&region=US&dateRange=%5B%222024-08-20%22%2C%222024-08-26%22%5D&cateValue=%5B%5D', 'Product_Details.csv')
 
-        #scrape_creator_details(driver, 'https://kalodata.com/creator/detail?id=7319965202961728555&language=en-US&currency=USD&region=US&dateRange=%5B%222024-08-12%22%2C%222024-08-18%22%5D&cateValue=%5B%5D', 'Creator_Details.csv')
+        # scrape_creator_details(driver, 'https://www.kalodata.com/creator/detail?id=6854302540969935877&language=en-US&currency=USD&region=US&dateRange=%5B%222024-07-31%22%2C%222024-08-29%22%5D&cateValue=%5B%5D', 'Creator_Details.csv')
 
         #scrape_live_stream_details(driver, 'https://kalodata.com/livestream/detail?id=7404153601582517038&language=en-US&currency=USD&region=US&dateRange=%5B%222024-08-16%22%2C%222024-08-22%22%5D&cateValue=%5B%5D', 'Live_Stream_Details.csv')
 
 
         # scrape_all_products(driver, 'https://www.kalodata.com/product', "Data.csv")
 
-        scrape_products(driver, 'https://www.kalodata.com/product', "Products.csv")
+        # scrape_products(driver, 'https://www.kalodata.com/product', "Products.csv")
+
+        scrape_creators(driver, 'https://www.kalodata.com/creator', "Creators.csv")
 
     finally:
         driver.quit()

@@ -174,12 +174,12 @@ def scrape_products(driver, url, output_csv):
                 driver.switch_to.window(original_window)
             
             try:
-                    if(count < 500):
-                    # Try to find and click the 'Next Page' button with the first XPath
-                        next_button = WebDriverWait(driver, 1).until(
-                            EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[9]/button'))
-                        )
-                        next_button.click()
+                if(count < 500):
+                # Try to find and click the 'Next Page' button with the first XPath
+                    next_button = WebDriverWait(driver, 1).until(
+                        EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[9]/button'))
+                    )
+                    next_button.click()
             except TimeoutException:
                 print("First 'Next Page' button not found or not clickable.")
                 try:
