@@ -3,7 +3,11 @@ from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from helpers import attempt_login, scrape_product_details, scrape_creator_details, scrape_live_stream_details, scrape_all_products, scrape_500_products
+# from helpers import attempt_login, scrape_product_details, scrape_creator_details, scrape_live_stream_details, scrape_600_products
+from initial import attempt_login
+from products import scrape_product_details, scrape_products
+from creators import scrape_creator_details, scrape_creators
+
 
 load_dotenv()
 
@@ -12,7 +16,7 @@ def main():
     service = Service(os.getenv("PATH_TO_CHROMEDRIVER"))
     
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")  # Enable headless mode
+    chrome_options.add_argument("--headless")  # Enable headless mode
     chrome_options.add_argument("--window-size=1920,1080")  # Set a large window size
     chrome_options.add_argument("--start-maximized")  # Maximized in case it's not headless
 
@@ -37,7 +41,7 @@ def main():
 
         # scrape_all_products(driver, 'https://www.kalodata.com/product', "Data.csv")
 
-        scrape_500_products(driver, 'https://www.kalodata.com/product', "Products.csv")
+        scrape_products(driver, 'https://www.kalodata.com/product', "Products.csv")
 
     finally:
         driver.quit()
