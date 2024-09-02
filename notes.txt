@@ -6,6 +6,8 @@ x 2. The scrape details function for products is not correct. It does not proper
 
 x 3. There is no attribute as "video_description" to be scraped from an individual video. Remove it from schema.
 
+4. In Creators Script, the email address is not taken correctly. handle it.
+
 Arham:
 
 x 1. video table attributes -> 'video_ad_view_ratio', 'video_ad_revenue_ratio', 'video_ad_spend' & 'video_ad_roas' all need to be updated to handle dynamic changes by time period.
