@@ -6,6 +6,7 @@ from selenium.webdriver.chrome.options import Options
 from initial import attempt_login
 from products import scrape_product_details, scrape_products
 from creators import scrape_creator_details, scrape_creators
+from live_streams import scrape_live_stream_details, scrape_live_streams
 
 
 load_dotenv()
@@ -40,10 +41,13 @@ def main():
 
         # scrape_all_products(driver, 'https://www.kalodata.com/product', "Data.csv")
 
-        # scrape_products(driver, 'https://www.kalodata.com/product', "Products.csv")
+        # scrape_products(driver, 'https://www.kalodata.com/product', "Data.csv")
 
-        scrape_creators(driver, 'https://www.kalodata.com/creator', "Creators.csv")
 
+        scrape_live_streams(driver, 'https://www.kalodata.com/livestream', "Live_Streams.csv")  
+
+        scrape_creators(driver, 'https://www.kalodata.com/creator', "Data.csv.csv")
+        
     finally:
         driver.quit()
 
