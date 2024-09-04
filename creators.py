@@ -2,7 +2,7 @@ import csv
 import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import NoSuchElementException, InvalidSessionIdException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, InvalidSessionIdException, TimeoutException, StaleElementReferenceException
 from selenium.webdriver.support import expected_conditions as EC
 
 def scrape_creator_details(driver, url):
@@ -86,9 +86,16 @@ def scrape_creator_details(driver, url):
         # Scrape email
         try:
             email_element = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div/div[1]/div[2]/div[2]/div/div[2]/div/div[2]/div[1]/div/a/div[2]/div/div')
-            details['Email address'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div/div[1]/div[2]/div[2]/div/div[2]/div/div[2]/div[1]/div/a/div[2]/div/div').get_attribute('href')
+            email_href = email_element.get_attribute('href')
+            
+            # Check if the email address is an empty string
+            if email_href.strip() == '':
+                details['Email address'] = 'N/A'
+            else:
+                details['Email address'] = email_href
         except:
             details['Email address'] = 'N/A'
+
 
         # Scrape data for each time range
         for range_name, range_xpath in time_ranges.items():
@@ -150,7 +157,6 @@ def scrape_creators(driver, url, output_csv):
 
     # Scroll to the bottom of the page to reveal more content
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    # time.sleep(1)  # Give time for content to load
 
     # Click on the specified elements
     try:
@@ -244,46 +250,39 @@ def scrape_creators(driver, url, output_csv):
                 # print(f"\nProcessing creator {index}/{len(creator_rows)}")
                 print(f'processing Creator #{count}')
 
-                # Click on the creator to open in a new tab
-                creator.click()
-
-                # Wait for the new tab to open and switch to it
-                WebDriverWait(driver, 10).until(EC.new_window_is_opened)
-                new_tab = [window for window in driver.window_handles if window != original_window][0]
-                driver.switch_to.window(new_tab)
-
-                # Scrape the creator details
-                data = {field: 'Not scraped' for field in header}
-                creator_url = driver.current_url
                 try:
+                    # Find the element again just before clicking
+                    creator = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')[index]
+                    creator.click()
+
+                    WebDriverWait(driver, 10).until(EC.new_window_is_opened)
+                    new_tab = [window for window in driver.window_handles if window != original_window][0]
+                    driver.switch_to.window(new_tab)
+
+                    data = {field: 'Not scraped' for field in header}
+                    creator_url = driver.current_url
                     scraped_data = scrape_creator_details(driver, creator_url)
-                    try:
-                        if scraped_data is not None:
-                            # print(data)
-                            data.update(scraped_data)
-                        else:
-                            print("scrape_creator_details returned None")
-                    except: 
-                        print("data was retutned as None")                            
+                    if scraped_data is not None:
+                        data.update(scraped_data)
+
+                    writer.writerow(data)
+
+                    driver.close()
+                    driver.switch_to.window(original_window)
+
+                except StaleElementReferenceException:
+                    print(f"StaleElementReferenceException: Retrying for Creator #{count}")
+                    continue
                 except Exception as e:
-                    print(f"Error scraping creator {count}: {e}")
-                    # Fill the row with "Not scraped" if there's an error
-                    # data = {field: 'Not scraped' for field in header}
-
-                # Write the details to CSV
-                writer.writerow(data)
-
-                # Close the current tab and switch back to the original tab
-                driver.close()
-                driver.switch_to.window(original_window)
+                    print(f"Error processing Creator #{count}: {e}")
 
             try:
                 if(count < 500):
-                    # Try to find and click the 'Next Page' button with the first XPath
-                        next_button = WebDriverWait(driver, 1).until(
-                            EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[9]/button'))
-                        )
-                        next_button.click()
+                # Try to find and click the 'Next Page' button with the first XPath
+                    next_button = WebDriverWait(driver, 1).until(
+                        EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[9]/button'))
+                    )
+                    next_button.click()
             except TimeoutException:
                 print("First 'Next Page' button not found or not clickable.")
                 try:
@@ -304,4 +303,4 @@ def scrape_creators(driver, url, output_csv):
                         print("No more pages to scrape or 'Next Page' button not found.")
                         break  # Exit the loop if neither button is found or clickable
 
-    print("\nFinished scraping all Creators.")        
+    print("\nFinished scraping all creators.")
