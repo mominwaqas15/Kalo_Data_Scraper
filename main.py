@@ -44,9 +44,9 @@ def main():
         # scrape_products(driver, 'https://www.kalodata.com/product', "Data.csv")
 
 
-        # scrape_live_streams(driver, 'https://www.kalodata.com/livestream', "Live_Streams.csv")  
+        scrape_live_streams(driver, 'https://www.kalodata.com/livestream', "Live_Streams.csv")  
 
-        scrape_creators(driver, 'https://www.kalodata.com/creator', "Creators.csv")
+        # scrape_creators(driver, 'https://www.kalodata.com/creator', "Creators.csv")
         
     finally:
         driver.quit()
