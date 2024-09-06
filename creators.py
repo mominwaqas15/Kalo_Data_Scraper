@@ -53,7 +53,8 @@ def scrape_creator_details(driver, url):
 
         try:
             bio = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div/div[1]/div[1]/div[3]/div/div[2]').text
-            if bio is None:
+            # print(f'Bio is "{bio}"')
+            if bio.strip() == '':
                 details['Bio'] = "N/A"
             else:
                 details['Bio'] = bio                
@@ -86,13 +87,14 @@ def scrape_creator_details(driver, url):
         # Scrape email
         try:
             email_element = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div/div[1]/div[2]/div[2]/div/div[2]/div/div[2]/div[1]/div/a/div[2]/div/div')
-            email_href = email_element.get_attribute('href')
+            # email_href = email_element.get_attribute('href')
+            email = email_element.text
             
             # Check if the email address is an empty string
-            if email_href.strip() == '':
+            if email.strip() == '':
                 details['Email address'] = 'N/A'
             else:
-                details['Email address'] = email_href
+                details['Email address'] = email
         except:
             details['Email address'] = 'N/A'
 
@@ -319,7 +321,7 @@ def scrape_creators(driver, url, output_csv):
             EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div'))
         )
         element_to_click1.click()
-        time.sleep(.5)
+        time.sleep(1)
 
         element_to_click2 = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div/div[2]/div/div/div/div/div/div[3]/div'))
@@ -437,8 +439,9 @@ def scrape_creators(driver, url, output_csv):
                         driver.refresh()  # Refresh the page to avoid stale elements
 
                     except Exception as e:
+                        retries += 1
                         print(f"Error processing Creator #{count}: {e}")
-                        break  # Break the retry loop for any other exception
+                        driver.refresh()  # Refresh the page in case of stale elements
 
                 if not success:
                     print(f"Failed to process Creator #{count} after {max_retries} attempts")
