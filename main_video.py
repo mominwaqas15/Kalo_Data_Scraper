@@ -3,12 +3,12 @@ from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from helpers_shop import attempt_login
-from helpers_video import scrape_video_details
+from helpers_video import scrape_video_details,scrape_500_video
 
 load_dotenv()
 
 def main():
-    chromedriver_path = r'C:\Users\arham\Desktop\chromedriver-win32\chromedriver-win32\chromedriver.exe'
+    chromedriver_path = r'C:\Users\arham\Desktop\chromedriver-win64\chromedriver.exe'
     service = Service(chromedriver_path)
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
@@ -23,7 +23,7 @@ def main():
 
         # scrape_products_info(driver, 'https://kalodata.com/product', 'products_info.csv')
         
-        scrape_video_details(driver, 'https://www.kalodata.com/video/detail?id=7400119474877189406&language=en-US&currency=USD&region=US&dateRange=%5B%222024-08-12%22%2C%222024-08-18%22%5D&cateValue=%5B%5D', 'Video_Details.csv')
+        scrape_500_video(driver, 'https://www.kalodata.com/video', 'Video.csv')
 
     finally:
         driver.quit()
