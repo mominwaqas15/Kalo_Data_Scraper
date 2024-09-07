@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import ElementClickInterceptedException, TimeoutException
+from selenium.common.exceptions import ElementClickInterceptedException, TimeoutException,StaleElementReferenceException
 import os
 from dotenv import load_dotenv
 from selenium import webdriver
@@ -295,7 +295,16 @@ def scrape_500_video(driver, url, output_csv):
                 print(f'processing video: {count}')
 
                 # Click on the product to open in a new tab
-                product.click()
+                try:
+                    product.click()
+
+                except StaleElementReferenceException:
+                    print(f"Stale element at video {count}, trying to re-locate and click.")
+                    # Re-locate the product and click again
+                    video_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
+                    video_rows = video_rows[1:]
+                    product = video_rows[index - 1]  # Re-fetch the element
+                    product.click()
 
                 # Wait for the new tab to open and switch to it
                 WebDriverWait(driver, 10).until(EC.new_window_is_opened)
