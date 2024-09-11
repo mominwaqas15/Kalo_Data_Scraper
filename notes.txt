@@ -6,9 +6,11 @@ x 2. The scrape details function for products is not correct. It does not proper
 
 x 3. There is no attribute as "video_description" to be scraped from an individual video. Remove it from schema.
 
-4. In Creators Script, the email address is not taken correctly. handle it.
+x 4. In Creators Script, the email address is not taken correctly. handle it.
 
 5. infinite loop in end of creators.py
+
+6. Add code to scrape products presented in a Live Stream.
 
 Arham:
 
