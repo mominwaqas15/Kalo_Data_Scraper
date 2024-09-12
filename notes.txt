@@ -12,6 +12,8 @@ x 4. In Creators Script, the email address is not taken correctly. handle it.
 
 6. Add code to scrape products presented in a Live Stream.
 
+7. Add code to scrape Creator account type for Creators.
+
 Arham:
 
 x 1. video table attributes -> 'video_ad_view_ratio', 'video_ad_revenue_ratio', 'video_ad_spend' & 'video_ad_roas' all need to be updated to handle dynamic changes by time period.
