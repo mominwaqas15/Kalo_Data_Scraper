@@ -26,6 +26,17 @@ def scrape_product_details(driver, url):
         except: 
             details['Product Category'] = "N/A"   
         details['Product Price'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[4]/div').text
+
+        try:
+            commission =  driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[6]/span').text
+            commission = commission.strip()
+            if commission:
+                details['Product Commission Rate'] = commission
+            else:
+                details['Product Commission Rate'] = "N/A"
+        except Exception as E:
+            details['Product Commission Rate'] = "N/A"
+
         details['30 Days Lowest Price'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[2]/div/div[5]/div/span').text
         details['Shop Name'] = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[4]/div[2]/div[2]').text
 
@@ -156,7 +167,7 @@ def scrape_products(driver, url, output_csv):
         print("The elements to show 50 products on page were not found.")
         return
 
-    header = ['Product Name', 'Shipped From', 'Product Category', 'Product Price','30 Days Lowest Price', 'Shop Name', 'Revenue in Yesterday','Revenue per day in Yesterday', 'Number of products sold in Yesterday','Number of products sold per day in Yesterday','Avg Unit Price in Yesterday', 'Live Revenue in Yesterday','Live Revenue per day in Yesterday', 'Video Revenue in Yesterday','Video Revenue per day in Yesterday','Shopping Mall Revenue in Yesterday','Shopping Mall Revenue per day in Yesterday', 'Revenue in Last 7 Days','Revenue per day in Last 7 Days','Number of products sold in Last 7 Days','Number of products sold per day in Last 7 Days','Avg Unit Price in Last 7 Days', 'Live Revenue in Last 7 Days','Live Revenue per day in Last 7 Days', 'Video Revenue in Last 7 Days','Video Revenue per day in Last 7 Days','Shopping Mall Revenue in Last 7 Days','Shopping Mall Revenue per day in Last 7 Days','Revenue in Last 30 Days', 'Revenue per day in Last 30 Days','Number of products sold in Last 30 Days','Number of products sold per day in Last 30 Days','Avg Unit Price in Last 30 Days', 'Live Revenue in Last 30 Days','Live Revenue per day in Last 30 Days', 'Video Revenue in Last 30 Days','Video Revenue per day in Last 30 Days','Shopping Mall Revenue in Last 30 Days','Shopping Mall Revenue per day in Last 30 Days','Revenue in Last 90 Days', 'Revenue per day in Last 90 Days','Number of products sold in Last 90 Days','Number of products sold per day in Last 90 Days','Avg Unit Price in Last 90 Days', 'Live Revenue in Last 90 Days','Live Revenue per day in Last 90 Days', 'Video Revenue in Last 90 Days','Video Revenue per day in Last 90 Days','Shopping Mall Revenue in Last 90 Days','Shopping Mall Revenue per day in Last 90 Days','Revenue in Last 180 Days', 'Revenue per day in Last 180 Days','Number of products sold in Last 180 Days','Number of products sold per day in Last 180 Days','Avg Unit Price in Last 180 Days', 'Live Revenue in Last 180 Days','Live Revenue per day in Last 180 Days','Video Revenue in Last 180 Days','Video Revenue per day in Last 180 Days','Shopping Mall Revenue in Last 180 Days','Shopping Mall Revenue per day in Last 180 Days','Earliest Date Recorded', 'TikTok Link', 'Image URLs']
+    header = ['Product Name', 'Shipped From', 'Product Category', 'Product Price', 'Product Commission Rate', '30 Days Lowest Price', 'Shop Name', 'Revenue in Yesterday','Revenue per day in Yesterday', 'Number of products sold in Yesterday','Number of products sold per day in Yesterday','Avg Unit Price in Yesterday', 'Live Revenue in Yesterday','Live Revenue per day in Yesterday', 'Video Revenue in Yesterday','Video Revenue per day in Yesterday','Shopping Mall Revenue in Yesterday','Shopping Mall Revenue per day in Yesterday', 'Revenue in Last 7 Days','Revenue per day in Last 7 Days','Number of products sold in Last 7 Days','Number of products sold per day in Last 7 Days','Avg Unit Price in Last 7 Days', 'Live Revenue in Last 7 Days','Live Revenue per day in Last 7 Days', 'Video Revenue in Last 7 Days','Video Revenue per day in Last 7 Days','Shopping Mall Revenue in Last 7 Days','Shopping Mall Revenue per day in Last 7 Days','Revenue in Last 30 Days', 'Revenue per day in Last 30 Days','Number of products sold in Last 30 Days','Number of products sold per day in Last 30 Days','Avg Unit Price in Last 30 Days', 'Live Revenue in Last 30 Days','Live Revenue per day in Last 30 Days', 'Video Revenue in Last 30 Days','Video Revenue per day in Last 30 Days','Shopping Mall Revenue in Last 30 Days','Shopping Mall Revenue per day in Last 30 Days','Revenue in Last 90 Days', 'Revenue per day in Last 90 Days','Number of products sold in Last 90 Days','Number of products sold per day in Last 90 Days','Avg Unit Price in Last 90 Days', 'Live Revenue in Last 90 Days','Live Revenue per day in Last 90 Days', 'Video Revenue in Last 90 Days','Video Revenue per day in Last 90 Days','Shopping Mall Revenue in Last 90 Days','Shopping Mall Revenue per day in Last 90 Days','Revenue in Last 180 Days', 'Revenue per day in Last 180 Days','Number of products sold in Last 180 Days','Number of products sold per day in Last 180 Days','Avg Unit Price in Last 180 Days', 'Live Revenue in Last 180 Days','Live Revenue per day in Last 180 Days','Video Revenue in Last 180 Days','Video Revenue per day in Last 180 Days','Shopping Mall Revenue in Last 180 Days','Shopping Mall Revenue per day in Last 180 Days','Earliest Date Recorded', 'TikTok Link', 'Image URLs']
 
     with open(output_csv, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.DictWriter(file, fieldnames=header)
@@ -169,7 +180,7 @@ def scrape_products(driver, url, output_csv):
             product_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
             product_rows = product_rows[1:]  # Exclude the header row
 
-            print(f"Total number of products found (excluding header): {len(product_rows)}")
+            print(f"Total number of products found: {len(product_rows)}")
 
             original_window = driver.current_window_handle  # Store the current window handle
 
@@ -179,7 +190,7 @@ def scrape_products(driver, url, output_csv):
                 if(count > 1000):
                     break
                 # print(f"\nProcessing product {index}/{len(product_rows)}")
-                print(f'processing product: {count}')
+                print(f'processing product #{count}')
 
                 max_retries = 2
                 retries = 0
@@ -190,10 +201,6 @@ def scrape_products(driver, url, output_csv):
                         product = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
                         ActionChains(driver).move_to_element_with_offset(product, 75, 40).click().perform()
 
-
-                        # Click on the product to open in a new tab
-
-                        # Wait for the new tab to open and switch to it
                         WebDriverWait(driver, 10).until(EC.new_window_is_opened)
                         new_tab = [window for window in driver.window_handles if window != original_window][0]
                         driver.switch_to.window(new_tab)
@@ -213,6 +220,7 @@ def scrape_products(driver, url, output_csv):
                         driver.close()
                         driver.switch_to.window(original_window)
                         success = True
+                        
                     except StaleElementReferenceException:
                         retries +=1
                         print(f"StaleElementReferenceException: Retrying for Product #{count}, attempt {retries}/{max_retries}")
