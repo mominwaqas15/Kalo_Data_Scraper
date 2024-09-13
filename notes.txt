@@ -8,11 +8,17 @@ x 3. There is no attribute as "video_description" to be scraped from an individu
 
 x 4. In Creators Script, the email address is not taken correctly. handle it.
 
-5. infinite loop in end of creators.py
+x 5. infinite loop in end of creators.py
 
 6. Add code to scrape products presented in a Live Stream.
 
-7. Add code to scrape Creator account type for Creators.
+x 7. Add code to scrape Creator account type for Creators.
+
+8. Add code to scrape creator name in a Live Stream.
+
+x 9. Handle creator account type and shop name (if any).
+
+10. add attribute for 'Commision rate' in Products table.
 
 Arham:
 

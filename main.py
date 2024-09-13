@@ -20,6 +20,11 @@ def main():
     chrome_options.add_argument("--window-size=1920,1080")  # Set a large window size
     chrome_options.add_argument("--start-maximized")  # Maximized in case it's not headless
 
+    prefs = {
+    "profile.managed_default_content_settings.images": 2  # 2 disables images
+    }
+    chrome_options.add_experimental_option("prefs", prefs)
+
     driver = webdriver.Chrome(service=service, options=chrome_options)
     # driver = webdriver.Chrome(service=service)
 
