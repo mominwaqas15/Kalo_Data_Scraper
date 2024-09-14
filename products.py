@@ -63,7 +63,7 @@ def scrape_product_details(driver, url):
                     try:
                         WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[1]/div[2]/div[1]')))
                     except TimeoutException as e:
-                        time.sleep(10)
+                        # time.sleep(5)
                         driver.refresh()
                         time.sleep(3)              
 
@@ -75,7 +75,7 @@ def scrape_product_details(driver, url):
                     try:
                         WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[2]/div[4]/div[2]/div[1]/div/div/div/div')))
                     except:
-                        time.sleep(10)
+                        # time.sleep()
                         driver.refresh()
                         time.sleep(3)
 
@@ -93,7 +93,7 @@ def scrape_product_details(driver, url):
                     retry_count += 1
                     print(f"Error during scraping for range '{range_name}', retry number{retry_count}.")
                     if retry_count < max_retries:
-                        time.sleep(30)
+                        time.sleep(10)
                         driver.refresh()  # Refresh page and retry
                         time.sleep(5)
                     else:
@@ -120,16 +120,40 @@ def scrape_product_details(driver, url):
             print(f"Error finding TikTok link element: {e}")
 
         try:
-            # print('\n\nscraping product images')
+            # Attempt to scrape multiple product images
             image_elements = driver.find_elements(By.XPATH, '//*[@class="images scrollbar flex flex-col pt-0 h-[168px] overflow-y-auto  gap-2"]/div')
-            image_urls = []
-            for image_element in image_elements:
+            
+            # If no image elements are found, attempt to scrape the single image
+            if not image_elements:
+                image_element = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[1]/div[1]/div[1]/div[1]/div[1]')
                 style_attribute = image_element.get_attribute('style')
-                url = style_attribute.split('url("')[1].split('");')[0]
-                image_urls.append(url)
-            details['Image URLs'] = ','.join(image_urls)
+                
+                # Ensure the style attribute contains the expected URL format
+                if 'url("' in style_attribute:
+                    image_url = style_attribute.split('url("')[1].split('");')[0]
+                    details['Image URLs'] = image_url
+                else:
+                    print("Style attribute does not contain a valid URL")
+                    details['Image URLs'] = "N/A"
+            
+            # If multiple images are found, scrape all of them
+            else:
+                image_urls = []
+                for image_element in image_elements:
+                    style_attribute = image_element.get_attribute('style')
+                    
+                    # Ensure the style attribute contains the expected URL format
+                    if 'url("' in style_attribute:
+                        url = style_attribute.split('url("')[1].split('");')[0]
+                        image_urls.append(url)
+                    else:
+                        print("Style attribute does not contain a valid URL")
+                
+                details['Image URLs'] = ','.join(image_urls) if image_urls else "N/A"
+                
         except NoSuchElementException as e:
             print(f"Error finding image elements: {e}")
+
 
     except NoSuchElementException as e:
         print(f"Error while scraping: {e}")   
@@ -198,8 +222,12 @@ def scrape_products(driver, url, output_csv):
 
                 while retries < max_retries and not success:
                     try:
-                        product = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
-                        ActionChains(driver).move_to_element_with_offset(product, 75, 40).click().perform()
+                        product.click()
+                        # product = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
+                        # WebDriverWait(driver, 10).until(
+                        # EC.presence_of_element_located((By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr'))
+                        # )
+                        # ActionChains(driver).move_to_element_with_offset(product, 75, 40).click().perform()
 
                         WebDriverWait(driver, 10).until(EC.new_window_is_opened)
                         new_tab = [window for window in driver.window_handles if window != original_window][0]
@@ -225,16 +253,19 @@ def scrape_products(driver, url, output_csv):
                         retries +=1
                         print(f"StaleElementReferenceException: Retrying for Product #{count}, attempt {retries}/{max_retries}")
                         driver.refresh()
+                        time.sleep(3)
 
                     except TimeoutException:
                         retries += 1
                         print(f"TimeoutException for Product #{count}: Retrying {retries}/{max_retries}")
                         driver.refresh() 
+                        time.sleep(3)
 
                     except Exception as e:
                         retries += 1
                         print(f"Error processing Product #{count}: {e}")
                         driver.refresh()
+                        time.sleep(3)
 
                 if not success:
                     print(f"Failed to process Product #{count} after {max_retries} attempts")
@@ -264,7 +295,7 @@ def scrape_products(driver, url, output_csv):
                     print(f"Retrying page refresh... Remaining attempts: {retry_attempts - 1}")
                     retry_attempts -= 1
                     driver.refresh()
-                    time.sleep(2)  # Allow time for the page to reload
+                    time.sleep(3)  # Allow time for the page to reload
 
             if not next_page_found:
                 print("No more pages to scrape or buttons not found.")

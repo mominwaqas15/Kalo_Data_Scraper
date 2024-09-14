@@ -407,26 +407,48 @@ def scrape_creators(driver, url, output_csv):
     # Scroll to the bottom of the page to reveal more content
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
+    max_retries_elements = 2
+    element_retries = 0
+
     # Click on the specified elements to show more creators (adjust these based on your page behavior)
-    try:
-        element_to_click1 = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div'))
-        )
-        element_to_click1.click()
-        time.sleep(1)
+    while element_retries < max_retries_elements:
+        try:
+            element_to_click1 = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div'))
+            )
+            element_to_click1.click()
+            time.sleep(1)
+            break  # Break the loop if click succeeds
+        except TimeoutException:
+            element_retries += 1
+            print(f"Retrying click for the first element (Attempt {element_retries}/{max_retries_elements})")
+            time.sleep(2)
 
-        element_to_click2 = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div/div[2]/div/div/div/div/div/div[3]/div'))
-        )
-        element_to_click2.click()
-
-    except TimeoutException:
+    if element_retries == max_retries_elements:
         print("The elements to show 50 creators on page were not found.")
-        return
+    else:
+        element_retries = 0  # Reset retry counter for the next element
+
+        # Retry for the second element
+        while element_retries < max_retries_elements:
+            try:
+                element_to_click2 = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div/div[2]/div/div/div/div/div/div[3]/div'))
+                )
+                element_to_click2.click()
+                break  # Break the loop if click succeeds
+            except TimeoutException:
+                element_retries += 1
+                print(f"Retrying click for the second element (Attempt {element_retries}/{max_retries_elements})")
+                time.sleep(2)
+
+        if element_retries == max_retries_elements:
+            print("The elements to show 50 creators on page were not found.")
 
     header = ['Username', 'Number of Followers', 'Debut Time',
        'creators in Last 30 Days', 'Bio', 'Earliest Date Recorded',
        'Tiktok Link', 'Instagram Link', 'YouTube Link', 'Email address',
+       'Creator Shop Name', 'Account Type',
        'Revenue in Yesterday', 'Revenue per day in Yesterday',
        'Live Revenue in Yesterday', 'Live Revenue per day in Yesterday',
        'Video Revenue in Yesterday', 'Video Revenue per day in Yesterday',

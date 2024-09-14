@@ -9,22 +9,21 @@ from products import scrape_product_details, scrape_products
 from creators import scrape_creator_details, scrape_creators
 from live_streams import scrape_live_stream_details, scrape_live_streams, product_names
 
-
 load_dotenv()
 
 def main():
-
     service = Service(os.getenv("PATH_TO_CHROMEDRIVER"))
     
     chrome_options = Options()
     chrome_options.add_argument("--headless")  # Enable headless mode
     chrome_options.add_argument("--window-size=1920,1080")  # Set a large window size
     chrome_options.add_argument("--start-maximized")  # Maximized in case it's not headless
+    chrome_options.add_argument("--mute-audio")  # Mute audio
 
-    prefs = {
-    "profile.managed_default_content_settings.images": 2  # 2 disables images
-    }
-    chrome_options.add_experimental_option("prefs", prefs)
+    # prefs = {
+    # "profile.managed_default_content_settings.images": 2  # 2 disables images
+    # }
+    # chrome_options.add_experimental_option("prefs", prefs)
 
     driver = webdriver.Chrome(service=service, options=chrome_options)
     # driver = webdriver.Chrome(service=service)
@@ -55,9 +54,9 @@ def main():
         driver.quit()
 
         print(f"Time for login = {login_time} seconds")
-        print(f"Avg Time for Products = {products_time} seconds")
+        print(f"Avg Time for products = {products_time} seconds")
         print(f"Avg Time for live Streams = {live_stream_time} seconds")
-        print(f"Time for login = {creator_time} seconds")
+        print(f"Time for creators = {creator_time} seconds")
 
 if __name__ == "__main__":
     main()

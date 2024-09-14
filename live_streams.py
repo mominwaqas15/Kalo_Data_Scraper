@@ -373,16 +373,19 @@ def scrape_live_streams(driver, url, output_csv):
                         retries += 1
                         print(f"StaleElementReferenceException encountered for live stream #{count}, retrying {retries}/{max_retries}...")
                         driver.refresh()  # Refresh the page in case of stale elements
+                        time.sleep(5)
 
                     except TimeoutException:
                         retries += 1
                         print(f"TimeoutException for live stream #{count}: Retrying {retries}/{max_retries}")
                         driver.refresh() 
+                        time.sleep(5)
 
                     except Exception as e:
                         retries += 1
                         print(f"Error processing live stream #{count}: {e}")
                         driver.refresh()  # Refresh the page in case of stale elements
+                        time.sleep(5)
 
                 if not success:
                     print(f"Failed to process live stream #{count} after {max_retries} attempts.")
@@ -414,7 +417,7 @@ def scrape_live_streams(driver, url, output_csv):
                     print(f"Retrying page refresh... Remaining attempts: {retry_attempts - 1}")
                     retry_attempts -= 1
                     driver.refresh()
-                    time.sleep(2)  # Allow time for the page to reload
+                    time.sleep(5)  # Allow time for the page to reload
 
             if not next_page_found:
                 print("No more pages to scrape or buttons not found.")
