@@ -15,7 +15,7 @@ def main():
     service = Service(os.getenv("PATH_TO_CHROMEDRIVER"))
     
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Enable headless mode
+    # chrome_options.add_argument("--headless")  # Enable headless mode
     chrome_options.add_argument("--window-size=1920,1080")  # Set a large window size
     chrome_options.add_argument("--start-maximized")  # Maximized in case it's not headless
     chrome_options.add_argument("--mute-audio")  # Mute audio
@@ -38,17 +38,17 @@ def main():
         start_time = time.time()
 
         scrape_products(driver, 'https://www.kalodata.com/product', "Products.csv")
-        products_time = (time.time() - start_time) / 1000
+        products_time = (time.time() - start_time) / 100
 
         start_time = time.time()
 
         scrape_live_streams(driver, 'https://www.kalodata.com/livestream', "Live_Streams.csv")  
-        live_stream_time = (time.time() - start_time) / 1000
+        live_stream_time = (time.time() - start_time) / 100
 
         start_time = time.time()
 
         scrape_creators(driver, 'https://www.kalodata.com/creator', "Creators.csv")
-        creator_time = (time.time() - start_time) / 1000
+        creator_time = (time.time() - start_time) / 100
 
     finally:
         driver.quit()
