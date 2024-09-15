@@ -26,7 +26,7 @@ def product_names(driver):
                     break  # Break the loop if successful
                 except StaleElementReferenceException as e:
                     retries += 1
-                    print(f"StaleElementReferenceException at product row {index + 1}. Retrying {retries}/{retry_limit}...")
+                    # print(f"StaleElementReferenceException at product row {index + 1}. Retrying {retries}/{retry_limit}...")
 
                     if retries < retry_limit:
                         # Refresh the page and find product rows again
@@ -38,7 +38,7 @@ def product_names(driver):
                         print(f"Failed to process product at row {index + 1} after {retry_limit} retries.")
                 except Exception as e:
                     retries += 1
-                    print(f"Exception occurred at product row {index + 1}: {str(e)}. Retrying {retries}/{retry_limit}...")
+                    # print(f"Exception occurred at product row {index + 1}: {str(e)}. Retrying {retries}/{retry_limit}...")
 
                     if retries < retry_limit:
                         # Refresh the page and find product rows again
@@ -75,7 +75,6 @@ def scrape_live_stream_details(driver, url):
     # print("\n\nstarted scraping live details")
     details = {}    
     driver.execute_script("window.scrollTo(0, 250);")
-
 
     try:
         WebDriverWait(driver, 10).until(
@@ -184,125 +183,6 @@ def scrape_live_stream_details(driver, url):
 
     return details              
 
-# def scrape_live_streams(driver, url, output_csv):
-#     # Visit the URL
-#     driver.get(url)
-#     count = 0
-
-#     # Scroll to the bottom of the page to reveal more content
-#     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-#     # time.sleep(1)  # Give time for content to load
-
-#     # Click on the specified elements
-#     try:
-#         element_to_click1 = WebDriverWait(driver, 10).until(
-#             EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div/div[1]'))
-#         )
-#         element_to_click1.click()
-
-#         element_to_click2 = WebDriverWait(driver, 10).until(
-#             EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div/div[2]/div/div/div/div/div/div[3]/div'))
-#         )
-#         element_to_click2.click()
-
-#         # WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[2]/div[1]/div/div[1]/div[1]/div[2]/div[1]')))
-
-#         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr'))
-#         )
-        
-
-#     except TimeoutException:
-#         print("The elements to show 50 live streams on page were not found.")
-#         return
-
-#     header = ['Live stream name', 'Number of products', 'Top 3 categories',
-#        'Live stream time', 'Stream duration', 'Creator name', 'Revenue',
-#        'Revenue per minute', 'Online viewers', 'Online viewers per minute',
-#        'Views', 'Views per minute', 'Items sold', 'Items sold per minute',
-#        'Average unit price']
-
-#     with open(output_csv, mode='w', newline='', encoding='utf-8') as file:
-#         writer = csv.DictWriter(file, fieldnames=header)
-#         writer.writeheader()
-
-#         # Continue scraping until no more pages
-#         while True:
-#             # Find all live_streams
-#             time.sleep(.5)
-#             live_stream_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
-
-#             print(f"Total number of live streams found: {len(live_stream_rows)}")
-
-#             original_window = driver.current_window_handle  # Store the current window handle
-
-#             # Loop through each live_stream
-#             for index, live_stream in enumerate(live_stream_rows[:50], start=1):
-#                 count = count + 1
-#                 if(count > 500):
-#                     break
-#                 print(f'processing live stream #{count}')
-
-#                 try:
-#                     # Re-locate the live stream element to avoid stale reference
-#                     live_stream_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
-#                     live_stream = live_stream_rows[index]
-
-#                     # Click on the live stream to open it in a new tab
-#                     live_stream.click()
-
-#                     # Wait for the new tab to open and switch to it
-#                     WebDriverWait(driver, 10).until(EC.new_window_is_opened)
-#                     new_tab = [window for window in driver.window_handles if window != original_window][0]
-#                     driver.switch_to.window(new_tab)
-
-#                     # Scrape the live_stream details
-#                     live_stream_url = driver.current_url
-#                     try:
-#                         data = scrape_live_stream_details(driver, live_stream_url)
-#                     except Exception as e:
-#                         print(f"Error scraping live stream {count}: {e}")
-#                         # Fill the row with "Not scraped" if there's an error
-#                         data = {field: 'Not scraped' for field in header}
-
-#                     # Write the details to CSV
-#                     writer.writerow(data)
-
-#                     driver.close()
-#                     driver.switch_to.window(original_window)
-          
-#                 except StaleElementReferenceException:
-#                     print(f"StaleElementReferenceException encountered for live stream #{count}. Retrying...")
-#                     continue                    
-                    
-#             try:
-#                 if(count < 500):
-#                 # Try to find and click the 'Next Page' button with the first XPath
-#                     next_button = WebDriverWait(driver, 1).until(
-#                         EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[9]/button'))
-#                     )
-#                     next_button.click()
-#             except TimeoutException:
-#                 print("First 'Next Page' button not found or not clickable.")
-#                 try:
-#                     # Try to find and click the 'Next Page' button with the second XPath
-#                     next_button = WebDriverWait(driver, 1).until(
-#                         EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/button'))
-#                     )
-#                     next_button.click()
-#                 except TimeoutException:
-#                     print("No more pages to scrape or 'Next Page' button not found.")
-#                     try:
-#                         # Try to find and click the 'Next Page' button with the second XPath
-#                         next_button = WebDriverWait(driver, 1).until(
-#                             EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[11]/button'))
-#                         )
-#                         next_button.click()
-#                     except TimeoutException:
-#                         print("No more pages to scrape or 'Next Page' button not found.")
-#                         break  # Exit the loop if neither button is found or clickable
-
-#     print("\nFinished scraping all Live Streams.")
-
 def scrape_live_streams(driver, url, output_csv):
     driver.get(url)
     count = 0
@@ -330,7 +210,7 @@ def scrape_live_streams(driver, url, output_csv):
         )
 
     except TimeoutException:
-        print("The elements to show 50 live streams on page were not found.")
+        # print("The elements to show 50 live streams on page were not found.")
         return
 
     header = [
@@ -351,7 +231,7 @@ def scrape_live_streams(driver, url, output_csv):
             live_stream_rows = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div[2]/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
             # live_stream_rows = live_stream_rows[1:]  # Exclude the header row
 
-            print(f"Total number of live streams found: {len(live_stream_rows)}")
+            # print(f"Total number of live streams found: {len(live_stream_rows)}")
 
             original_window = driver.current_window_handle
 
@@ -359,7 +239,7 @@ def scrape_live_streams(driver, url, output_csv):
                 count += 1
                 if count > 100:
                     break
-                print(f'Processing live stream #{count}')
+                # print(f'Processing live stream #{count}')
 
                 # Retry mechanism in case of StaleElementReferenceException
                 max_retries = 2
@@ -396,19 +276,19 @@ def scrape_live_streams(driver, url, output_csv):
 
                     except StaleElementReferenceException:
                         retries += 1
-                        print(f"StaleElementReferenceException encountered for live stream #{count}, retrying {retries}/{max_retries}...")
+                        # print(f"StaleElementReferenceException encountered for live stream #{count}, retrying {retries}/{max_retries}...")
                         driver.refresh()  # Refresh the page in case of stale elements
                         time.sleep(5)
 
                     except TimeoutException:
                         retries += 1
-                        print(f"TimeoutException for live stream #{count}: Retrying {retries}/{max_retries}")
+                        # print(f"TimeoutException for live stream #{count}: Retrying {retries}/{max_retries}")
                         driver.refresh() 
                         time.sleep(5)
 
                     except Exception as e:
                         retries += 1
-                        print(f"Error processing live stream #{count}: {e}")
+                        # print(f"Error processing live stream #{count}: {e}")
                         driver.refresh()  # Refresh the page in case of stale elements
                         time.sleep(5)
 
@@ -435,17 +315,17 @@ def scrape_live_streams(driver, url, output_csv):
                             break
 
                     except TimeoutException:
-                        print(f"Next Page button li[{i}] not found or clickable.")
+                        # print(f"Next Page button li[{i}] not found or clickable.")
                         continue  # Try the next button if this one is not found
 
                 if not next_page_found:
-                    print(f"Retrying page refresh... Remaining attempts: {retry_attempts - 1}")
+                    # print(f"Retrying page refresh... Remaining attempts: {retry_attempts - 1}")
                     retry_attempts -= 1
                     driver.refresh()
                     time.sleep(5)  # Allow time for the page to reload
 
             if not next_page_found:
-                print("No more pages to scrape or buttons not found.")
+                # print("No more pages to scrape or buttons not found.")
                 break  # Exit the outer loop if no next button is found even after retries
 
     print("\nFinished scraping all Live Streams.")
