@@ -11,18 +11,43 @@ def product_names(driver):
     product_count = 0
     
     while True:
-        # Find all product rows
+
+        retry_limit = 2
+
         product_rows = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[3]/div[1]/div/div/div/div[1]/div/table/tbody/tr')
-        # product_rows = product_rows[1:]  # Exclude the header row
-        # print(f"Total number of products for live stream found: {len(product_rows)}")
         for index, product in enumerate(product_rows):
-            try:
-                # Extract product name relative to the current row
-                product_name = product.find_element(By.XPATH, './td[2]/div/div[2]/div/div[1]/div').text
-                names.append(product_name)
-                # print(f"Product #{product_count + 1}: {product_name}")  # Debugging output
-            except Exception as e:
-                print(f"Error processing product at row {index + 1}: {str(e)}")
+            retries = 0  # Track the number of retries for each product
+            while retries < retry_limit:
+                try:
+                    # Extract product name relative to the current row
+                    product_name = product.find_element(By.XPATH, './td[2]/div/div[2]/div/div[1]/div').text
+                    names.append(product_name)
+                    # print(f"Product #{index + 1}: {product_name}")  # Optional: Debugging output
+                    break  # Break the loop if successful
+                except StaleElementReferenceException as e:
+                    retries += 1
+                    print(f"StaleElementReferenceException at product row {index + 1}. Retrying {retries}/{retry_limit}...")
+
+                    if retries < retry_limit:
+                        # Refresh the page and find product rows again
+                        driver.refresh()
+                        time.sleep(3)  # Allow some time for the page to load
+                        product_rows = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[3]/div[1]/div/div/div/div[1]/div/table/tbody/tr')
+                        product = product_rows[index]  # Reassign the specific product row for retry
+                    else:
+                        print(f"Failed to process product at row {index + 1} after {retry_limit} retries.")
+                except Exception as e:
+                    retries += 1
+                    print(f"Exception occurred at product row {index + 1}: {str(e)}. Retrying {retries}/{retry_limit}...")
+
+                    if retries < retry_limit:
+                        # Refresh the page and find product rows again
+                        driver.refresh()
+                        time.sleep(3)  # Allow some time for the page to load
+                        product_rows = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[3]/div[3]/div/div[3]/div[1]/div/div/div/div[1]/div/table/tbody/tr')
+                        product = product_rows[index]  # Reassign the specific product row for retry
+                    else:
+                        print(f"Failed to process product at row {index + 1} after {retry_limit} retries.")
 
         next_product_page_found = False
 
