@@ -10,18 +10,19 @@ from initial import attempt_login
 from products import scrape_product_details, scrape_products
 from creators import scrape_creator_details, scrape_creators
 from live_streams import scrape_live_stream_details, scrape_live_streams, product_names
+from category import scrape_category, scrape_category_details
 
 load_dotenv()
 
-ua = UserAgent()
-user_agent = ua.random  # Get a random User-Agent
+# ua = UserAgent()
+# user_agent = ua.random  # Get a random User-Agent
 
 def main():
     service = Service(os.getenv("PATH_TO_CHROMEDRIVER"))
     
     chrome_options = Options()
 
-    chrome_options.add_argument(f'user-agent={user_agent}')
+    # chrome_options.add_argument(f'user-agent={user_agent}')
     chrome_options.add_argument("--headless")  # Enable headless mode
     chrome_options.add_argument("--window-size=1920,1080")  # Set a large window size
     chrome_options.add_argument("--start-maximized")  # Maximized in case it's not headless
@@ -34,15 +35,15 @@ def main():
 
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
-    stealth(
-    driver,
-    languages=["en-US", "en"],
-    vendor="Google Inc.",
-    platform="Win32",
-    webgl_vendor="Intel Inc.",
-    renderer="Intel Iris OpenGL Engine",
-    fix_hairline=True,
-    )
+    # stealth(
+    # driver,
+    # languages=["en-US", "en"],
+    # vendor="Google Inc.",
+    # platform="Win32",
+    # webgl_vendor="Intel Inc.",
+    # renderer="Intel Iris OpenGL Engine",
+    # fix_hairline=True,
+    # )
     
     # driver = webdriver.Chrome(service=service)
 
@@ -53,15 +54,19 @@ def main():
         attempt_login(driver)
         login_time = time.time() - start_time
 
+        # start_time = time.time()
+
+        # scrape_category(driver, 'https://www.kalodata.com/category', "Category.csv")
+        # category_time = (time.time() - start_time) / 10
+
         start_time = time.time()
 
         scrape_products(driver, 'https://www.kalodata.com/product', "Products.csv")
-        products_time = (time.time() - start_time) / 100
-
+        products_time = (time.time() - start_time) / 10
         start_time = time.time()
 
         scrape_live_streams(driver, 'https://www.kalodata.com/livestream', "Live_Streams.csv")  
-        live_stream_time = (time.time() - start_time) / 100
+        live_stream_time = (time.time() - start_time) / 10
 
         start_time = time.time()
 
@@ -73,6 +78,7 @@ def main():
 
         print(f"Time for login = {login_time} seconds")
         print(f"Avg Time for products = {products_time} seconds")
+        # print(f"Time for category = {category_time} seconds")
         print(f"Avg Time for live Streams = {live_stream_time} seconds")
         print(f"Time for creators = {creator_time} seconds")
 

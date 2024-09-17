@@ -12,28 +12,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 
-
-def attempt_login(driver):
-    driver.get('https://kalodata.com/login')
-
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'register_email')))
-    
-    email_input = driver.find_element(By.ID, 'register_email')
-    email_input.send_keys('info@ejex.co.uk')
-
-    password_input = driver.find_element(By.ID, 'register_password')
-    password_input.send_keys('111222333Pp!@#')
-
-    login_button = driver.find_element(By.XPATH, '//button[@type="submit" and contains(@class, "login_submit-btn")]')
-    login_button.click()
-
-
-
-
-
 def scrape_shop_details(driver, url):
     driver.get(url)
-    print("\n\nStarted scraping\n\n")
+    #print("\n\nStarted scraping\n\n")
     details = {}
 
     try:
@@ -120,16 +101,29 @@ def scrape_shop_details(driver, url):
                 details[f'shop_mall_revenue_share_{range_name}'] = "N/A"
 
     except NoSuchElementException as e:
-        print(f"Error while scraping: {e}")
+        print(f"Error while scraping shop: {e}")
 
     return details
 
+def scrape_shop_with_retry(driver, url, retries=3):
+    attempt = 0
+    while attempt < retries:
+        try:
+            # Try to scrape the shop details
+            return scrape_shop_details(driver, url)
+        except Exception as e:
+            print(f"Error scraping shop, attempt {attempt + 1}/{retries}: {e}")
+            attempt += 1
+            time.sleep(5)  # Wait for 5 seconds before retrying
+    #print("Failed to scrape shop after multiple attempts.")
+    return None  # Return None or some placeholder data
 
 
-def scrape_500_shop(driver, url, output_csv):
+def scrape_shop(driver, url, output_csv):
     # Visit the URL
     driver.get(url)
     count = 0
+    page_number=0
 
     # Scroll to the bottom of the page to reveal more content
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -137,18 +131,18 @@ def scrape_500_shop(driver, url, output_csv):
 
     # Click on the specified elements
     try:
-        print('scrol')
+        #print('scrol')
         element_to_click1 = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div'))
         )
         element_to_click1.click()
-        print('10 pege')
+        #print('10 pege')
 
         element_to_click2 = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div/div[2]/div/div/div/div/div/div[3]/div'))
         )
         element_to_click2.click()
-        print('50 page')
+        #print('50 page')
 
     except TimeoutException:
         print("The elements to show 50 shop on page were not found.")
@@ -167,7 +161,7 @@ def scrape_500_shop(driver, url, output_csv):
             
             shop_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr/td[2]')
             
-            shop_rows = shop_rows[1:]  # Exclude the header row
+            shop_rows = shop_rows[0:]  # Exclude the header row
 
             print(f"Total number of shop found (excluding header): {len(shop_rows)}")
 
@@ -176,18 +170,29 @@ def scrape_500_shop(driver, url, output_csv):
             # Loop through each shop
             for index, product in enumerate(shop_rows[:50], start=1):
                 count = count + 1
-                if(count > 500):
+                if count >  10:
                     break
+                
                 # print(f"\nProcessing product {index}/{len(product_rows)}")
-                print(f'processing shop: {count}')
+                #print(f'processing shop: {count}')
+                try:
+                 # Wait for the spinner to disappear
+                     WebDriverWait(driver, 20).until(
+                     EC.invisibility_of_element_located((By.CLASS_NAME, 'ant-spin-spinning'))
+                    )
+                except TimeoutException:
+                    print("Spinner took too long to disappear.")
+
+
+
                 try:
                     product.click()
 
                 except StaleElementReferenceException:
                     print(f"Stale element at video {count}, trying to re-locate and click.")
                     # Re-locate the product and click again
-                    video_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
-                    video_rows = video_rows[1:]
+                    video_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr/td[2]')
+                    video_rows = video_rows[0:]
                     product = video_rows[index - 1]  # Re-fetch the element
                     product.click()
 
@@ -203,7 +208,7 @@ def scrape_500_shop(driver, url, output_csv):
                 # Scrape the shop details
                 shop_url = driver.current_url
                 try:
-                    data = scrape_shop_details(driver, shop_url)
+                    data = scrape_shop_with_retry(driver, shop_url)
                 except Exception as e:
                     print(f"Error scraping shop {count}: {e}")
                     # Fill the row with "Not scraped" if there's an error
@@ -215,36 +220,47 @@ def scrape_500_shop(driver, url, output_csv):
                 # Close the current tab and switch back to the original tab
                 driver.close()
                 driver.switch_to.window(original_window)
-
+            
             try:
-                    if(count < 500):
-                    # Try to find and click the 'Next Page' button with the first XPath
-                        next_button = WebDriverWait(driver, 1).until(
-                            EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[9]/button'))
-                        )
-                        next_button.click()
-
+                if(count > 10):
+                    break
+                page_number += 1
+                next_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//li[@title='Next Page' and @class='ant-pagination-next']/button"))
+                )
+                next_button.click()
             except TimeoutException:
-                print("First 'Next Page' button not found or not clickable.")
+                print(f"No more pages to scrape or 'Next Page' button not found on page {page_number}.")
+                break
+            # try:
+            #         if(count < 500):
+            #         # Try to find and click the 'Next Page' button with the first XPath
+            #             next_button = WebDriverWait(driver, 1).until(
+            #                 EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[9]/button'))
+            #             )
+            #             next_button.click()
+
+            # except TimeoutException:
+            #     print("First 'Next Page' button not found or not clickable.")
 
 
-                try:
-                    # Try to find and click the 'Next Page' button with the second XPath
-                    next_button = WebDriverWait(driver, 1).until(
-                        EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/button'))
-                    )
-                    next_button.click()
-                except TimeoutException:
-                    print("No more pages to scrape or 'Next Page' button not found.")
-                    try:
-                        # Try to find and click the 'Next Page' button with the second XPath
-                        next_button = WebDriverWait(driver, 1).until(
-                            EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[11]/button'))
-                        )
-                        next_button.click()
-                    except TimeoutException:
-                        print("No more pages to scrape or 'Next Page' button not found.")
-                        break  # Exit the loop if neither button is found or clickable
+            #     try:
+            #         # Try to find and click the 'Next Page' button with the second XPath
+            #         next_button = WebDriverWait(driver, 1).until(
+            #             EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/button'))
+            #         )
+            #         next_button.click()
+            #     except TimeoutException:
+            #         print("No more pages to scrape or 'Next Page' button not found.")
+            #         try:
+            #             # Try to find and click the 'Next Page' button with the second XPath
+            #             next_button = WebDriverWait(driver, 1).until(
+            #                 EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[11]/button'))
+            #             )
+            #             next_button.click()
+            #         except TimeoutException:
+            #             print("No more pages to scrape or 'Next Page' button not found.")
+            #             break  # Exit the loop if neither button is found or clickable
 
     print("\nFinished scraping all shop.")
 

@@ -4,21 +4,23 @@ from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from selenium_stealth import stealth
-from fake_useragent import UserAgent
+#from selenium_stealth import stealth
+#from fake_useragent import UserAgent
 from concurrent.futures import ThreadPoolExecutor
 from initial import attempt_login
 from products import scrape_product_details, scrape_products
 from creators import scrape_creator_details, scrape_creators
 from live_streams import scrape_live_stream_details, scrape_live_streams, product_names
+from category import scrape_category
+from videos import scrape_video
+from shops import scrape_shop
 
 load_dotenv()
 
-
-
 def create_driver():
     service = Service(os.getenv("PATH_TO_CHROMEDRIVER"))
-    
+    # chromedriver_path = r'C:\Users\arham\Desktop\chromedriver-win64\chromedriver.exe'
+    # service = Service(chromedriver_path)
     chrome_options = Options()
     # ua = UserAgent()
     # user_agent = ua.random  # Get a random User-Agent
@@ -66,14 +68,41 @@ def scrape_creators_task():
     finally:
         driver.quit()
 
+# def scrape_shop_task():
+#     driver = create_driver()
+#     try:
+#         attempt_login(driver)  # Attempt login within this task
+#         scrape_shop(driver, 'https://kalodata.com/shop', 'Shop.csv')
+#     finally:
+#         driver.quit()
+
+# def scrape_category_task():
+#     driver = create_driver()
+#     try:
+#         attempt_login(driver)  # Attempt login within this task
+#         scrape_category(driver,'https://www.kalodata.com/category','Category.csv')
+#     finally:
+#         driver.quit()
+
+# def scrape_video_task():
+#     driver = create_driver()
+#     try:
+#         attempt_login(driver)  # Attempt login within this task
+#         scrape_video(driver, 'https://www.kalodata.com/video', 'Video.csv')
+#     finally:
+#         driver.quit()
+
 def main():
     start_time = time.time()
     
     # Use ThreadPoolExecutor to run scraping tasks in parallel
     with ThreadPoolExecutor(max_workers=3) as executor:
         futures = [
-            executor.submit(scrape_products_task),
+            # executor.submit(scrape_shop_task),
+            # executor.submit(scrape_category_task),
+            # executor.submit(scrape_video_task),
             executor.submit(scrape_live_streams_task),
+            executor.submit(scrape_products_task),
             executor.submit(scrape_creators_task)
         ]
     
