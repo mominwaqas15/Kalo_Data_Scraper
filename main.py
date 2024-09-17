@@ -63,15 +63,15 @@ def main():
 
         scrape_products(driver, 'https://www.kalodata.com/product', "Products.csv")
         products_time = (time.time() - start_time) / 10
-        start_time = time.time()
+        # start_time = time.time()
 
-        scrape_live_streams(driver, 'https://www.kalodata.com/livestream', "Live_Streams.csv")  
-        live_stream_time = (time.time() - start_time) / 10
+        # scrape_live_streams(driver, 'https://www.kalodata.com/livestream', "Live_Streams.csv")  
+        # live_stream_time = (time.time() - start_time) / 10
 
-        start_time = time.time()
+        # start_time = time.time()
 
-        scrape_creators(driver, 'https://www.kalodata.com/creator', "Creators.csv")
-        creator_time = (time.time() - start_time) / 100
+        # scrape_creators(driver, 'https://www.kalodata.com/creator', "Creators.csv")
+        # creator_time = (time.time() - start_time) / 100
 
     finally:
         driver.quit()
@@ -79,8 +79,8 @@ def main():
         print(f"Time for login = {login_time} seconds")
         print(f"Avg Time for products = {products_time} seconds")
         # print(f"Time for category = {category_time} seconds")
-        print(f"Avg Time for live Streams = {live_stream_time} seconds")
-        print(f"Time for creators = {creator_time} seconds")
+        # print(f"Avg Time for live Streams = {live_stream_time} seconds")
+        # print(f"Time for creators = {creator_time} seconds")
 
 if __name__ == "__main__":
     main()
