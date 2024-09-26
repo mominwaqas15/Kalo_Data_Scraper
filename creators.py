@@ -275,6 +275,9 @@ def scrape_creators(driver, url, output_csv):
         if element_retries == max_retries_elements:
             print("The elements to show 50 creators on page were not found.")
 
+        else:
+            print("buttons clicked!")
+
     header = ['Username', 'Number of Followers', 'Debut Time',
        'creators in Last 30 Days', 'Bio', 'Earliest Date Recorded',
        'Tiktok Link', 'Instagram Link', 'YouTube Link', 'Email address',
@@ -336,8 +339,8 @@ def scrape_creators(driver, url, output_csv):
         # Continue scraping until no more pages
         while True:
             # Find all creators
-            time.sleep(0.5)
-            creator_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
+            time.sleep(1)
+            creator_rows = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody/tr[2]')
             creator_rows = creator_rows[1:]  # Exclude the header row
 
             # print(f"Total number of creators found (excluding header): {len(creator_rows)}")
@@ -347,7 +350,7 @@ def scrape_creators(driver, url, output_csv):
             # Loop through each creator
             for index, creator in enumerate(creator_rows[:50], start=1):
                 count += 1
-                if count >  100:
+                if count >  10:
                     break
                 # print(f'Processing Creator #{count}')
 
@@ -373,7 +376,7 @@ def scrape_creators(driver, url, output_csv):
                         scraped_data = scrape_creator_details(driver, creator_url)
                         if scraped_data is not None:
                             data.update(scraped_data)
-
+                        
                         writer.writerow(data)
 
                         driver.close()
@@ -408,7 +411,7 @@ def scrape_creators(driver, url, output_csv):
             while retry_attempts > 0 and not next_page_found:
                 for i in range(9, 12):  # Check for 'li[9]' to 'li[99]' dynamically
                     try:
-                        if count < 100:
+                        if count < 10:
                             next_button_xpath = f'/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[{i}]/button'
                             next_button = WebDriverWait(driver, 2).until(
                                 EC.element_to_be_clickable((By.XPATH, next_button_xpath))
