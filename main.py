@@ -14,17 +14,20 @@ load_dotenv()
 
 def main():
     print("started scraping")
-    service = Service(os.getenv("PATH_TO_CHROMEDRIVER"))
+    # service = Service(os.getenv("PATH_TO_CHROMEDRIVER"))
+
+    service = Service(ChromeDriverManager().install())
+    # driver = webdriver.Chrome(service=service, options=chrome_options)
     
     chrome_options = Options()
-
-    # chrome_options = Options()
-    # chrome_options.binary_location = "/usr/bin/google-chrome"  # Ensure Chrome is installed
 
     chrome_options.add_argument("--headless")  # Enable headless mode
     chrome_options.add_argument("--window-size=1920,1080")  # Set a large window size
     chrome_options.add_argument("--start-maximized")  # Maximized in case it's not headless
     chrome_options.add_argument("--mute-audio")  # Mute audio
+    chrome_options.add_argument('--no-sandbox')  # Bypass OS security model
+    chrome_options.add_argument('--disable-dev-shm-usage')  # Overcome limited resource problems
+    chrome_options.add_argument('--disable-gpu')  # Applicable for non-GPU instances
 
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
