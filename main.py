@@ -14,9 +14,9 @@ load_dotenv()
 
 def main():
     print("started scraping")
-    # service = Service(os.getenv("PATH_TO_CHROMEDRIVER"))
+    service = Service(os.getenv("PATH_TO_CHROMEDRIVER"))
 
-    service = Service(ChromeDriverManager().install())
+    # service = Service(ChromeDriverManager().install())
     # driver = webdriver.Chrome(service=service, options=chrome_options)
     
     chrome_options = Options()
@@ -30,18 +30,6 @@ def main():
     chrome_options.add_argument('--disable-gpu')  # Applicable for non-GPU instances
 
     driver = webdriver.Chrome(service=service, options=chrome_options)
-
-    # stealth(
-    # driver,
-    # languages=["en-US", "en"],
-    # vendor="Google Inc.",
-    # platform="Win32",
-    # webgl_vendor="Intel Inc.",
-    # renderer="Intel Iris OpenGL Engine",
-    # fix_hairline=True,
-    # )
-    
-    # driver = webdriver.Chrome(service=service)
 
     try:
         print("attempted login")
