@@ -4,7 +4,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-# from selenium_stealth import stealth
 from initial import attempt_login
 from products import scrape_product_details, scrape_products
 from creators import scrape_creator_details, scrape_creators
@@ -14,6 +13,7 @@ from category import scrape_category, scrape_category_details
 load_dotenv()
 
 def main():
+    print("started scraping")
     service = Service(os.getenv("PATH_TO_CHROMEDRIVER"))
     
     chrome_options = Options()
@@ -25,7 +25,6 @@ def main():
     chrome_options.add_argument("--window-size=1920,1080")  # Set a large window size
     chrome_options.add_argument("--start-maximized")  # Maximized in case it's not headless
     chrome_options.add_argument("--mute-audio")  # Mute audio
-
 
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
@@ -42,10 +41,12 @@ def main():
     # driver = webdriver.Chrome(service=service)
 
     try:
+        print("attempted login")
         attempt_login(driver)
 
         # scrape_products(driver, 'https://www.kalodata.com/product', "Products.csv")
 
+        print("started scraping creators")
         scrape_creators(driver, 'https://www.kalodata.com/creator', "Creators.csv")
 
     finally:
