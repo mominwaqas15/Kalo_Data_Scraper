@@ -148,7 +148,7 @@ def scrape_category(driver, url, output_csv):
             original_window = driver.current_window_handle  # Store the current window handle
 
             # Loop through each category
-            for index, product in enumerate(category_rows[:50], start=1):
+            for index, category in enumerate(category_rows[:50], start=1):
                 count = count + 1
                 if count >  10:
                     break
@@ -156,15 +156,17 @@ def scrape_category(driver, url, output_csv):
                 # print(f"\nProcessing product {index}/{len(product_rows)}")
                 #print(f'processing category: {count}')
                 try:
-                    product.click()
+                    category = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div[2]/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')[index]
+                    ActionChains(driver).move_to_element_with_offset(category, 75, 40).click().perform()
+                    # category.click()
 
                 except StaleElementReferenceException:
                     print(f"Stale element at video {count}, trying to re-locate and click.")
                     # Re-locate the product and click again
                     video_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
                     video_rows = video_rows[1:]
-                    product = video_rows[index - 1]  # Re-fetch the element
-                    product.click()
+                    category = video_rows[index - 1]  # Re-fetch the element
+                    category.click()
 
                 # Wait for the new tab to open and switch to it
                 WebDriverWait(driver, 10).until(EC.new_window_is_opened)

@@ -201,7 +201,7 @@ def scrape_products(driver, url, output_csv):
         while True:
             # Find all products
             time.sleep(.5)
-            product_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
+            product_rows = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody/tr')
             product_rows = product_rows[1:]  # Exclude the header row
 
             print(f"Total number of products found: {len(product_rows)}")
@@ -222,12 +222,12 @@ def scrape_products(driver, url, output_csv):
 
                 while retries < max_retries and not success:
                     try:
-                        product.click()
-                        # product = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
+                        product = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody/tr')[index]
+                        ActionChains(driver).move_to_element_with_offset(product, 75, 40).click().perform()
+                        # product.click()
                         # WebDriverWait(driver, 10).until(
                         # EC.presence_of_element_located((By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr'))
                         # )
-                        # ActionChains(driver).move_to_element_with_offset(product, 75, 40).click().perform()
 
                         WebDriverWait(driver, 10).until(EC.new_window_is_opened)
                         new_tab = [window for window in driver.window_handles if window != original_window][0]

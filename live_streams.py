@@ -249,11 +249,11 @@ def scrape_live_streams(driver, url, output_csv):
                 while retries < max_retries and not success:
                     try:
                         # Re-locate the live stream elements before clicking
-                        live_stream_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
-                        live_stream = live_stream_rows[index]
-                        live_stream.click()
+                        live_stream = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div[2]/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')[index]
+                        ActionChains(driver).move_to_element_with_offset(live_stream, 75, 40).click().perform()
+                        # live_stream.click()
+                        # live_stream = live_stream_rows[index]
 
-                        # ActionChains(driver).move_to_element_with_offset(live_stream, 75, 40).click().perform()
 
                         WebDriverWait(driver, 10).until(EC.new_window_is_opened)
                         new_tab = [window for window in driver.window_handles if window != original_window][0]

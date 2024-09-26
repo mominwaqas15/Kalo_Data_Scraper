@@ -274,9 +274,8 @@ def scrape_creators(driver, url, output_csv):
 
         if element_retries == max_retries_elements:
             print("The elements to show 50 creators on page were not found.")
-
-        else:
-            print("buttons clicked!")
+        # else:
+        #     print("buttons clicked!")
 
     header = ['Username', 'Number of Followers', 'Debut Time',
        'creators in Last 30 Days', 'Bio', 'Earliest Date Recorded',
@@ -340,7 +339,7 @@ def scrape_creators(driver, url, output_csv):
         while True:
             # Find all creators
             time.sleep(1)
-            creator_rows = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody/tr[2]')
+            creator_rows = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody/tr')
             creator_rows = creator_rows[1:]  # Exclude the header row
 
             # print(f"Total number of creators found (excluding header): {len(creator_rows)}")
@@ -360,7 +359,7 @@ def scrape_creators(driver, url, output_csv):
 
                 while retries < max_retries and not success:
                     try:
-                        creator = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')[index]
+                        creator = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody/tr')[index]
                         ActionChains(driver).move_to_element_with_offset(creator, 75, 40).click().perform()
                         # size = creator.size
                         # print(f"Width: {size['width']} px, Height: {size['height']} px")
