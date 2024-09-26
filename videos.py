@@ -10,6 +10,32 @@ from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 
+
+
+
+def attempt_login(driver):
+    driver.get('https://kalodata.com/login')
+
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'register_email')))
+    
+    email_input = driver.find_element(By.ID, 'register_email')
+    email_input.send_keys('info@ejex.co.uk')
+
+    password_input = driver.find_element(By.ID, 'register_password')
+    password_input.send_keys('111222333Pp!@#')
+
+    login_button = driver.find_element(By.XPATH, '//button[@type="submit" and contains(@class, "login_submit-btn")]')
+    login_button.click()
+
+
+
+
+
+
+
+
+
+
 def scrape_video_details(driver, url, output_csv):
     # Load the webpage
     driver.get(url)
@@ -159,10 +185,13 @@ def scrape_video_details(driver, url, output_csv):
                 video_details[f'video_ad_roas_{period}'] = "N/A"
 
     except Exception as e:
-        print(f"Error while scraping video: {e}")
+        print(f"Error while scraping: {e}")
 
 
     return video_details
+
+
+
 
 def scrape_video(driver, url, output_csv):
     # Visit the URL
@@ -211,7 +240,7 @@ def scrape_video(driver, url, output_csv):
         while True:
             # Find all video
             time.sleep(0.5)
-            video_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
+            video_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody/tr/td[2]')
             video_rows = video_rows[1:]  # Exclude the header row
 
             #print(f"Total number of videos found (excluding header): {len(video_rows)}")
@@ -240,7 +269,7 @@ def scrape_video(driver, url, output_csv):
                 except StaleElementReferenceException:
                     print(f"Stale element at video {count}, trying to re-locate and click.")
                     # Re-locate the product and click again
-                    video_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
+                    video_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody/tr/td[2]')
                     video_rows = video_rows[1:]
                     product = video_rows[index - 1]  # Re-fetch the element
                     product.click()
@@ -303,3 +332,4 @@ def scrape_video(driver, url, output_csv):
             #             break  # Exit the loop if neither button is found or clickable
 
     print("\nFinished scraping all videos.")
+

@@ -11,6 +11,65 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 import time
 
+# def get_category_links(driver, url):
+#     driver.get(url)  # Replace with the target URL
+
+#     # Wait for the page to load (adjust the sleep time as needed)
+#     time.sleep(2)
+
+#     try:
+#         # Wait until the specific element is present and clickable
+#         element = WebDriverWait(driver, 10).until(
+#             EC.element_to_be_clickable((By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr[2]/td[2]'))
+#         )
+
+#         # Move to the element and click it
+#         actions = ActionChains(driver)
+#         link=actions.move_to_element(element).click().perform()
+#         print(link)
+#         scrape_category_details(driver,link,'category.csv')
+
+#         # Optionally, print the text of the element
+#         #print(element.text)
+
+#     except NoSuchElementException as e:
+#         print(f"Error while scraping: {e}")
+#         return None
+#     except Exception as e:
+#         print(f"An unexpected error occurred: {e}")
+#         return None
+
+
+
+
+# def get_revenue_with_symbol(driver, element_xpath, arrow_xpath, green_arrow_url, red_arrow_url):
+#     try:
+#         # Extract the revenue text
+#         revenue_text = driver.find_element(By.XPATH, element_xpath).text
+
+#         # Extract the background-image CSS property of the arrow element
+#         arrow_element = driver.find_element(By.XPATH, arrow_xpath)
+#         background_image = arrow_element.value_of_css_property('background-image')
+
+#         # Extract the URL from the background-image property
+#         arrow_image_url = background_image.split('"')[1]  # Assumes the URL is within double quotes
+
+#         # Determine the direction based on the background-image URL
+#         if green_arrow_url in arrow_image_url:
+#             symbol = "-"  # Negative symbol for decrease
+#         elif red_arrow_url in arrow_image_url:
+#             symbol = "+"  # Positive symbol for increase
+#         else:
+#             symbol = ""  # Default case if no direction is found
+
+#         # Append the symbol to the revenue text
+#         revenue_with_symbol = f"{symbol}{revenue_text}"
+#         return revenue_with_symbol
+
+#     except NoSuchElementException as e:
+#         print(f"Error while scraping: {e}")
+#         return None
+
 def scrape_category_details(driver, url, output_csv):
     # Load the webpage
     driver.get(url)
@@ -100,9 +159,11 @@ def scrape_category_details(driver, url, output_csv):
                 details[f'category_mall_revenue_share_{period}'] = "N/A"
 
     except NoSuchElementException as e:
-        print(f"Error while scraping category: {e}")
+        print(f"Error while scraping: {e}")
 
     return details
+
+
 
 def scrape_category(driver, url, output_csv):
     # Visit the URL
@@ -139,7 +200,7 @@ def scrape_category(driver, url, output_csv):
         while True:
             # Find all category
             time.sleep(.5)
-            category_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
+            category_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody/tr')
             
             category_rows = category_rows[1:]  # Exclude the header row
 
@@ -148,7 +209,7 @@ def scrape_category(driver, url, output_csv):
             original_window = driver.current_window_handle  # Store the current window handle
 
             # Loop through each category
-            for index, category in enumerate(category_rows[:50], start=1):
+            for index, product in enumerate(category_rows[:50], start=1):
                 count = count + 1
                 if count >  10:
                     break
@@ -156,17 +217,16 @@ def scrape_category(driver, url, output_csv):
                 # print(f"\nProcessing product {index}/{len(product_rows)}")
                 #print(f'processing category: {count}')
                 try:
-                    category = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div[2]/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')[index]
-                    ActionChains(driver).move_to_element_with_offset(category, 75, 40).click().perform()
-                    # category.click()
+                    product.click()
 
                 except StaleElementReferenceException:
                     print(f"Stale element at video {count}, trying to re-locate and click.")
                     # Re-locate the product and click again
-                    video_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
+                    video_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody/tr')
+                    
                     video_rows = video_rows[1:]
-                    category = video_rows[index - 1]  # Re-fetch the element
-                    category.click()
+                    product = video_rows[index - 1]  # Re-fetch the element
+                    product.click()
 
                 # Wait for the new tab to open and switch to it
                 WebDriverWait(driver, 10).until(EC.new_window_is_opened)
@@ -193,10 +253,10 @@ def scrape_category(driver, url, output_csv):
                     if(count > 10):
                         break
                     # Try to find and click the 'Next Page' button with the first XPath
-                    next_button = WebDriverWait(driver, 1).until(
-                        EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[9]/button'))
-                    )
-                    next_button.click()
+                        next_button = WebDriverWait(driver, 1).until(
+                            EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[9]/button'))
+                        )
+                        next_button.click()
 
             except TimeoutException:
                 print("First 'Next Page' button not found or not clickable.")
@@ -221,3 +281,10 @@ def scrape_category(driver, url, output_csv):
                         break  # Exit the loop if neither button is found or clickable
 
     print("\nFinished scraping all category.")    
+
+# Example usage:
+# driver = webdriver.Chrome()
+# url = 'http://example.com/category-details'
+# output_csv = 'category_details.csv'
+# scrape_category_details(driver, url, output_csv)
+# driver.quit()

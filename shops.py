@@ -12,6 +12,25 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 
+
+def attempt_login(driver):
+    driver.get('https://kalodata.com/login')
+
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'register_email')))
+    
+    email_input = driver.find_element(By.ID, 'register_email')
+    email_input.send_keys('info@ejex.co.uk')
+
+    password_input = driver.find_element(By.ID, 'register_password')
+    password_input.send_keys('111222333Pp!@#')
+
+    login_button = driver.find_element(By.XPATH, '//button[@type="submit" and contains(@class, "login_submit-btn")]')
+    login_button.click()
+
+
+
+
+
 def scrape_shop_details(driver, url):
     driver.get(url)
     #print("\n\nStarted scraping\n\n")
@@ -101,7 +120,7 @@ def scrape_shop_details(driver, url):
                 details[f'shop_mall_revenue_share_{range_name}'] = "N/A"
 
     except NoSuchElementException as e:
-        print(f"Error while scraping shop: {e}")
+        print(f"Error while scraping: {e}")
 
     return details
 
@@ -129,43 +148,24 @@ def scrape_shop(driver, url, output_csv):
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     # time.sleep(1)  # Give time for content to load
 
-    max_retries_elements = 2
-    element_retries = 0
+    # Click on the specified elements
+    try:
+        #print('scrol')
+        element_to_click1 = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div'))
+        )
+        element_to_click1.click()
+        #print('10 pege')
 
-    # Click on the specified elements to show more creators (adjust these based on your page behavior)
-    while element_retries < max_retries_elements:
-        try:
-            element_to_click1 = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div'))
-            )
-            element_to_click1.click()
-            time.sleep(1)
-            break  # Break the loop if click succeeds
-        except TimeoutException:
-            element_retries += 1
-            # print(f"Retrying click for the first element (Attempt {element_retries}/{max_retries_elements})")
-            time.sleep(2)
+        element_to_click2 = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div/div[2]/div/div/div/div/div/div[3]/div'))
+        )
+        element_to_click2.click()
+        #print('50 page')
 
-    if element_retries == max_retries_elements:
-        print("The elements to show 50 creators on page were not found.")
-    else:
-        element_retries = 0  # Reset retry counter for the next element
-
-        # Retry for the second element
-        while element_retries < max_retries_elements:
-            try:
-                element_to_click2 = WebDriverWait(driver, 10).until(
-                    EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div/div[2]/div/div/div/div/div/div[3]/div'))
-                )
-                element_to_click2.click()
-                break  # Break the loop if click succeeds
-            except TimeoutException:
-                element_retries += 1
-                print(f"Retrying click for the second element (Attempt {element_retries}/{max_retries_elements})")
-                time.sleep(2)
-
-        if element_retries == max_retries_elements:
-            print("The elements to show 50 shops on page were not found.")
+    except TimeoutException:
+        print("The elements to show 50 shop on page were not found.")
+        return
 
     header = ['shop_name','shop_type','shop_earliest_date_recorded','shop_soa_revenue_Yesterday','shop_soa_revenue_per_day_Yesterday','shop_affiliate_revenue_Yesterday','shop_affiliate_revenue_per_day_Yesterday','shop_soa_revenue_share_Yesterday','shop_aff_revenue_share_Yesterday','shop_mall_revenue_share_Yesterday','shop_soa_revenue_Last 7 Days','shop_soa_revenue_per_day_Last 7 Days','shop_affiliate_revenue_Last 7 Days','shop_affiliate_revenue_per_day_Last 7 Days','shop_soa_revenue_share_Last 7 Days','shop_aff_revenue_share_Last 7 Days','shop_mall_revenue_share_Last 7 Days','shop_soa_revenue_Last 30 Days','shop_soa_revenue_per_day_Last 30 Days','shop_affiliate_revenue_Last 30 Days','shop_affiliate_revenue_per_day_Last 30 Days','shop_soa_revenue_share_Last 30 Days','shop_aff_revenue_share_Last 30 Days','shop_mall_revenue_share_Last 30 Days','shop_soa_revenue_Last 90 Days','shop_soa_revenue_per_day_Last 90 Days','shop_affiliate_revenue_Last 90 Days','shop_affiliate_revenue_per_day_Last 90 Days','shop_soa_revenue_share_Last 90 Days','shop_aff_revenue_share_Last 90 Days','shop_mall_revenue_share_Last 90 Days','shop_soa_revenue_Last 180 Days','shop_soa_revenue_per_day_Last 180 Days','shop_affiliate_revenue_Last 180 Days','shop_affiliate_revenue_per_day_Last 180 Days','shop_soa_revenue_share_Last 180 Days','shop_aff_revenue_share_Last 180 Days','shop_mall_revenue_share_Last 180 Days']
 
@@ -178,7 +178,7 @@ def scrape_shop(driver, url, output_csv):
             # Find all shop
             time.sleep(.5)
             
-            shop_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr/td[2]')
+            shop_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody/tr/td[2]')
             
             shop_rows = shop_rows[0:]  # Exclude the header row
 
@@ -201,6 +201,11 @@ def scrape_shop(driver, url, output_csv):
                     )
                 except TimeoutException:
                     print("Spinner took too long to disappear.")
+                try:
+                    modal = driver.find_element(By.XPATH, "//div[@class='ant-modal-wrap ant-modal-centered']")
+                    driver.execute_script("arguments[0].style.display = 'none';", modal)  # Hide the modal
+                except NoSuchElementException:
+                    pass  # No modal found, continue    
 
 
 
@@ -210,7 +215,8 @@ def scrape_shop(driver, url, output_csv):
                 except StaleElementReferenceException:
                     print(f"Stale element at video {count}, trying to re-locate and click.")
                     # Re-locate the product and click again
-                    video_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr/td[2]')
+                    video_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody/tr/td[2]')
+                    
                     video_rows = video_rows[0:]
                     product = video_rows[index - 1]  # Re-fetch the element
                     product.click()
