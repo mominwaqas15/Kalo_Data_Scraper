@@ -44,6 +44,7 @@ def main():
 
     finally:
         driver.quit()
+        print("closed")
 
 if __name__ == "__main__":
     main()
