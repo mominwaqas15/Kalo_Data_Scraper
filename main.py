@@ -39,7 +39,9 @@ def main():
     try:
         attempt_login(driver)
 
-        scrape_products(driver, 'https://www.kalodata.com/product', "Products.csv")
+        # scrape_products(driver, 'https://www.kalodata.com/product', "Products.csv")
+
+        scrape_creators(driver, 'https://www.kalodata.com/creator', "Creators.csv")
 
     finally:
         driver.quit()
