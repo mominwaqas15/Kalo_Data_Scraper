@@ -211,7 +211,7 @@ def scrape_products(driver, url, output_csv):
             # Loop through each product
             for index, product in enumerate(product_rows[:50], start=1):
                 count = count + 1
-                if(count > 3):
+                if(count > 10):
                     break
                 # print(f"\nProcessing product {index}/{len(product_rows)}")
                 print(f'processing product #{count}')
@@ -276,7 +276,7 @@ def scrape_products(driver, url, output_csv):
             while retry_attempts > 0 and not next_page_found:
                 for i in range(9, 12):  # Check for 'li[9]' to 'li[99]' dynamically
                     try:
-                        if count < 3:
+                        if count < 10:
                             next_button_xpath = f'/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[{i}]/button'
                             next_button = WebDriverWait(driver, 2).until(
                                 EC.element_to_be_clickable((By.XPATH, next_button_xpath))
@@ -302,33 +302,3 @@ def scrape_products(driver, url, output_csv):
                 break  # Exit the outer loop if no next button is found even after retries
 
     print("\nFinished scraping all products.")
-                        
-            
-    #         try:
-    #             if(count < 500):
-    #             # Try to find and click the 'Next Page' button with the first XPath
-    #                 next_button = WebDriverWait(driver, 1).until(
-    #                     EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[9]/button'))
-    #                 )
-    #                 next_button.click()
-    #         except TimeoutException:
-    #             print("First 'Next Page' button not found or not clickable.")
-    #             try:
-    #                 # Try to find and click the 'Next Page' button with the second XPath
-    #                 next_button = WebDriverWait(driver, 1).until(
-    #                     EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/button'))
-    #                 )
-    #                 next_button.click()
-    #             except TimeoutException:
-    #                 print("No more pages to scrape or 'Next Page' button not found.")
-    #                 try:
-    #                     # Try to find and click the 'Next Page' button with the second XPath
-    #                     next_button = WebDriverWait(driver, 1).until(
-    #                         EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[11]/button'))
-    #                     )
-    #                     next_button.click()
-    #                 except TimeoutException:
-    #                     print("No more pages to scrape or 'Next Page' button not found.")
-    #                     break  # Exit the loop if neither button is found or clickable
-
-    # print("\nFinished scraping all products.")

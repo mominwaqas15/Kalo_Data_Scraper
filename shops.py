@@ -129,24 +129,43 @@ def scrape_shop(driver, url, output_csv):
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     # time.sleep(1)  # Give time for content to load
 
-    # Click on the specified elements
-    try:
-        #print('scrol')
-        element_to_click1 = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div'))
-        )
-        element_to_click1.click()
-        #print('10 pege')
+    max_retries_elements = 2
+    element_retries = 0
 
-        element_to_click2 = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div/div[2]/div/div/div/div/div/div[3]/div'))
-        )
-        element_to_click2.click()
-        #print('50 page')
+    # Click on the specified elements to show more creators (adjust these based on your page behavior)
+    while element_retries < max_retries_elements:
+        try:
+            element_to_click1 = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div'))
+            )
+            element_to_click1.click()
+            time.sleep(1)
+            break  # Break the loop if click succeeds
+        except TimeoutException:
+            element_retries += 1
+            # print(f"Retrying click for the first element (Attempt {element_retries}/{max_retries_elements})")
+            time.sleep(2)
 
-    except TimeoutException:
-        print("The elements to show 50 shop on page were not found.")
-        return
+    if element_retries == max_retries_elements:
+        print("The elements to show 50 creators on page were not found.")
+    else:
+        element_retries = 0  # Reset retry counter for the next element
+
+        # Retry for the second element
+        while element_retries < max_retries_elements:
+            try:
+                element_to_click2 = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div/div[2]/div/div/div/div/div/div[3]/div'))
+                )
+                element_to_click2.click()
+                break  # Break the loop if click succeeds
+            except TimeoutException:
+                element_retries += 1
+                print(f"Retrying click for the second element (Attempt {element_retries}/{max_retries_elements})")
+                time.sleep(2)
+
+        if element_retries == max_retries_elements:
+            print("The elements to show 50 shops on page were not found.")
 
     header = ['shop_name','shop_type','shop_earliest_date_recorded','shop_soa_revenue_Yesterday','shop_soa_revenue_per_day_Yesterday','shop_affiliate_revenue_Yesterday','shop_affiliate_revenue_per_day_Yesterday','shop_soa_revenue_share_Yesterday','shop_aff_revenue_share_Yesterday','shop_mall_revenue_share_Yesterday','shop_soa_revenue_Last 7 Days','shop_soa_revenue_per_day_Last 7 Days','shop_affiliate_revenue_Last 7 Days','shop_affiliate_revenue_per_day_Last 7 Days','shop_soa_revenue_share_Last 7 Days','shop_aff_revenue_share_Last 7 Days','shop_mall_revenue_share_Last 7 Days','shop_soa_revenue_Last 30 Days','shop_soa_revenue_per_day_Last 30 Days','shop_affiliate_revenue_Last 30 Days','shop_affiliate_revenue_per_day_Last 30 Days','shop_soa_revenue_share_Last 30 Days','shop_aff_revenue_share_Last 30 Days','shop_mall_revenue_share_Last 30 Days','shop_soa_revenue_Last 90 Days','shop_soa_revenue_per_day_Last 90 Days','shop_affiliate_revenue_Last 90 Days','shop_affiliate_revenue_per_day_Last 90 Days','shop_soa_revenue_share_Last 90 Days','shop_aff_revenue_share_Last 90 Days','shop_mall_revenue_share_Last 90 Days','shop_soa_revenue_Last 180 Days','shop_soa_revenue_per_day_Last 180 Days','shop_affiliate_revenue_Last 180 Days','shop_affiliate_revenue_per_day_Last 180 Days','shop_soa_revenue_share_Last 180 Days','shop_aff_revenue_share_Last 180 Days','shop_mall_revenue_share_Last 180 Days']
 
