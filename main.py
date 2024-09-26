@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from selenium_stealth import stealth
+# from selenium_stealth import stealth
 from initial import attempt_login
 from products import scrape_product_details, scrape_products
 from creators import scrape_creator_details, scrape_creators
