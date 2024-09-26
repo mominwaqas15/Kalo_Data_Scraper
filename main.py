@@ -39,8 +39,8 @@ def main():
 
         # scrape_products(driver, 'https://www.kalodata.com/product', "Products.csv")
 
-        print("started scraping creators")
-        scrape_creators(driver, 'https://www.kalodata.com/creator', "Creators.csv")
+        # print("started scraping creators")
+        # scrape_creators(driver, 'https://www.kalodata.com/creator', "Creators.csv")
 
     finally:
         driver.quit()
