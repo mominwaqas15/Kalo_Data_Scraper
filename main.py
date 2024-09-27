@@ -14,9 +14,9 @@ load_dotenv()
 
 def main():
     print("started scraping")
-    # service = Service(os.getenv("PATH_TO_CHROMEDRIVER"))
+    service = Service(os.getenv("PATH_TO_CHROMEDRIVER"))
     # service = Service("/home/ubuntu/chromedriver-linux64/chromedriver")
-    service = Service(ChromeDriverManager().install())
+    # service = Service(ChromeDriverManager().install())
 
     # service = Service(ChromeDriverManager().install())
     # driver = webdriver.Chrome(service=service, options=chrome_options)
