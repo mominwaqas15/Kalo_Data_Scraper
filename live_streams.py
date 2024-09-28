@@ -187,6 +187,7 @@ def scrape_live_streams(driver, url, output_csv):
     driver.get(url)
     count = 0
     # max_streams = 500
+    print('enter live stream function')
 
     # Scroll to the bottom of the page to load content
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
