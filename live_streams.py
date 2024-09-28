@@ -187,7 +187,7 @@ def scrape_live_streams(driver, url, output_csv):
     driver.get(url)
     count = 0
     # max_streams = 500
-    print('enter live stream function')
+    # print('enter live stream function')
 
     # Scroll to the bottom of the page to load content
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -207,12 +207,14 @@ def scrape_live_streams(driver, url, output_csv):
         element_to_click2.click()
 
         WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr'))
+            EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div[2]/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody'))
         )
+        # print("table loaded!")
 
     except TimeoutException:
         # print("The elements to show 50 live streams on page were not found.")
         return
+    # print("Clicked for 50 rows to show!")
 
     header = [
         'Live stream name', 'Number of products', 'Top 3 categories',
@@ -229,7 +231,7 @@ def scrape_live_streams(driver, url, output_csv):
         while True:
             # Find all live streams on the current page
             time.sleep(.5)
-            live_stream_rows = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div[2]/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
+            live_stream_rows = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div[2]/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody/tr')
             # live_stream_rows = live_stream_rows[1:]  # Exclude the header row
 
             # print(f"Total number of live streams found: {len(live_stream_rows)}")
@@ -238,7 +240,7 @@ def scrape_live_streams(driver, url, output_csv):
 
             for index, live_stream in enumerate(live_stream_rows[:50], start=0):
                 count += 1
-                if count > 10:
+                if count > 100:
                     break
                 # print(f'Processing live stream #{count}')
 
@@ -250,11 +252,13 @@ def scrape_live_streams(driver, url, output_csv):
                 while retries < max_retries and not success:
                     try:
                         # Re-locate the live stream elements before clicking
-                        live_stream = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div[2]/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')[index]
+                        # live_stream = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div[2]/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')[index]
+                        # live_stream = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div[2]/div[2]/div/div[1]/div/div/div/div[2]/div/table/tbody/tr')
                         ActionChains(driver).move_to_element_with_offset(live_stream, 75, 40).click().perform()
+                        # print("clicking on element")
+                        # live_stream.click()
                         # live_stream.click()
                         # live_stream = live_stream_rows[index]
-
 
                         WebDriverWait(driver, 10).until(EC.new_window_is_opened)
                         new_tab = [window for window in driver.window_handles if window != original_window][0]
@@ -302,7 +306,7 @@ def scrape_live_streams(driver, url, output_csv):
             while retry_attempts > 0 and not next_page_found:
                 for i in range(9, 12):  # Check for 'li[9]' to 'li[99]' dynamically
                     try:
-                        if(count < 10):
+                        if(count < 100):
                             next_button_xpath = f'/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[{i}]/button'
                             # Try to find and click the 'Next Page' button with the first XPath
                             next_button = WebDriverWait(driver, 1).until(

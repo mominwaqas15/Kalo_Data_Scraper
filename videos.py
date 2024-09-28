@@ -194,7 +194,7 @@ def scrape_video(driver, url, output_csv):
     # Click on the specified elements
     try:
         element_to_click1 = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div/div[1]/span[2]'))
+            EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div/div[1]'))
         )
         element_to_click1.click()
 
@@ -202,6 +202,10 @@ def scrape_video(driver, url, output_csv):
             EC.element_to_be_clickable((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[10]/div/div[2]/div/div/div/div/div/div[3]/div'))
         )
         element_to_click2.click()
+
+        # WebDriverWait(driver, 10).until(
+        #     EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div[2]/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody'))
+        # )
 
     except TimeoutException:
         print("The elements to show 50 video on page were not found.")
@@ -229,23 +233,23 @@ def scrape_video(driver, url, output_csv):
         while True:
             # Find all video
             time.sleep(0.5)
-            video_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody')
+            video_rows = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody/tr')
             video_rows = video_rows[1:]  # Exclude the header row
+            # print(f"Total number of videos found (excluding header): {len(video_rows)}")
 
-            #print(f"Total number of videos found (excluding header): {len(video_rows)}")
 
             original_window = driver.current_window_handle  # Store the current window handle
 
             # Loop through each video
-            for index, product in enumerate(video_rows, start=1):
+            for index, video in enumerate(video_rows, start=1):
                 count += 1
-                if count >  10:
+                if count >  100:
                     break
                 #print(f'Processing video: {count}')
                 # Wait for the spinner to disappear before clicking the video product row
                 try:
                  # Wait for the spinner to disappear
-                     WebDriverWait(driver, 20).until(
+                     WebDriverWait(driver, 10).until(
                      EC.invisibility_of_element_located((By.CLASS_NAME, 'ant-spin-spinning'))
                     )
                 except TimeoutException:
@@ -254,14 +258,14 @@ def scrape_video(driver, url, output_csv):
 
                 # Click on the product to open in a new tab
                 try:
-                    product.click()
+                    video.click()
                 except StaleElementReferenceException:
                     print(f"Stale element at video {count}, trying to re-locate and click.")
                     # Re-locate the product and click again
                     video_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody')
                     video_rows = video_rows[1:]
-                    product = video_rows[index - 1]  # Re-fetch the element
-                    product.click()
+                    video = video_rows[index - 1]  # Re-fetch the element
+                    video.click()
 
                 # Wait for the new tab to open and switch to it
                 WebDriverWait(driver, 10).until(EC.new_window_is_opened)
@@ -285,7 +289,7 @@ def scrape_video(driver, url, output_csv):
                 driver.switch_to.window(original_window)
 
             try:
-                if count >  10:
+                if count >  100:
                     break
                 page_number += 1
                 next_button = WebDriverWait(driver, 10).until(
