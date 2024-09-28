@@ -43,7 +43,7 @@ def main():
 
         scrape_shop(driver, 'https://www.kalodata.com/shop', "Shops.csv")
 
-        scrape_video(driver, 'https://www.kalodata.com/video', "Videos.csv")
+        #scrape_video(driver, 'https://www.kalodata.com/video', "Videos.csv")
 
         scrape_creators(driver, 'https://www.kalodata.com/creator', "Creators.csv")
 
