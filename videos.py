@@ -11,8 +11,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 
 
-
-
 def attempt_login(driver):
     driver.get('https://kalodata.com/login')
 
@@ -26,15 +24,6 @@ def attempt_login(driver):
 
     login_button = driver.find_element(By.XPATH, '//button[@type="submit" and contains(@class, "login_submit-btn")]')
     login_button.click()
-
-
-
-
-
-
-
-
-
 
 def scrape_video_details(driver, url, output_csv):
     # Load the webpage

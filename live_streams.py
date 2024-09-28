@@ -237,7 +237,7 @@ def scrape_live_streams(driver, url, output_csv):
 
             for index, live_stream in enumerate(live_stream_rows[:50], start=0):
                 count += 1
-                if count > 1000:
+                if count > 10:
                     break
                 # print(f'Processing live stream #{count}')
 
@@ -301,7 +301,7 @@ def scrape_live_streams(driver, url, output_csv):
             while retry_attempts > 0 and not next_page_found:
                 for i in range(9, 12):  # Check for 'li[9]' to 'li[99]' dynamically
                     try:
-                        if(count < 1000):
+                        if(count < 10):
                             next_button_xpath = f'/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[{i}]/button'
                             # Try to find and click the 'Next Page' button with the first XPath
                             next_button = WebDriverWait(driver, 1).until(

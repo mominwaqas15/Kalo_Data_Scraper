@@ -211,7 +211,7 @@ def scrape_category(driver, url, output_csv):
             # Loop through each category
             for index, product in enumerate(category_rows[:50], start=1):
                 count = count + 1
-                if count >  10:
+                if count > 10:
                     break
                 
                 # print(f"\nProcessing product {index}/{len(product_rows)}")
