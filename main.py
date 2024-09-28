@@ -39,17 +39,17 @@ def main():
         print("attempted login")
         attempt_login(driver)
 
-        scrape_category(driver, 'https://www.kalodata.com/category', "Categories.csv")
+        #scrape_category(driver, 'https://www.kalodata.com/category', "Categories.csv")
 
-        scrape_shop(driver, 'https://www.kalodata.com/shop', "Shops.csv")
+        #scrape_shop(driver, 'https://www.kalodata.com/shop', "Shops.csv")
 
         #scrape_video(driver, 'https://www.kalodata.com/video', "Videos.csv")
 
-        scrape_creators(driver, 'https://www.kalodata.com/creator', "Creators.csv")
+        #scrape_creators(driver, 'https://www.kalodata.com/creator', "Creators.csv")
 
         scrape_live_streams(driver, 'https://www.kalodata.com/livestream', "Live_Streams.csv")
 
-        scrape_products(driver, 'https://www.kalodata.com/product', "Products.csv")
+        #scrape_products(driver, 'https://www.kalodata.com/product', "Products.csv")
         
         # print("started scraping creators")
     finally:
