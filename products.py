@@ -211,7 +211,7 @@ def scrape_products(driver, url, output_csv):
             # Loop through each product
             for index, product in enumerate(product_rows[:50], start=1):
                 count = count + 1
-                if(count > 10):
+                if(count > 100):
                     break
                 # print(f"\nProcessing product {index}/{len(product_rows)}")
                 print(f'processing product #{count}')
@@ -276,7 +276,7 @@ def scrape_products(driver, url, output_csv):
             while retry_attempts > 0 and not next_page_found:
                 for i in range(9, 12):  # Check for 'li[9]' to 'li[99]' dynamically
                     try:
-                        if count < 10:
+                        if count < 100:
                             next_button_xpath = f'/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/ul/li[{i}]/button'
                             next_button = WebDriverWait(driver, 2).until(
                                 EC.element_to_be_clickable((By.XPATH, next_button_xpath))

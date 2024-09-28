@@ -211,7 +211,7 @@ def scrape_category(driver, url, output_csv):
             # Loop through each category
             for index, product in enumerate(category_rows[:50], start=1):
                 count = count + 1
-                if count > 10:
+                if count > 100:
                     break
                 
                 # print(f"\nProcessing product {index}/{len(product_rows)}")
@@ -250,7 +250,7 @@ def scrape_category(driver, url, output_csv):
                 driver.switch_to.window(original_window)
 
             try:
-                    if(count > 10):
+                    if(count > 100):
                         break
                     # Try to find and click the 'Next Page' button with the first XPath
                         next_button = WebDriverWait(driver, 1).until(

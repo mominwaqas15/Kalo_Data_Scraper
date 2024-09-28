@@ -189,7 +189,7 @@ def scrape_shop(driver, url, output_csv):
             # Loop through each shop
             for index, product in enumerate(shop_rows[:50], start=1):
                 count = count + 1
-                if count >  10:
+                if count >  100:
                     break
                 
                 # print(f"\nProcessing product {index}/{len(product_rows)}")
@@ -247,7 +247,7 @@ def scrape_shop(driver, url, output_csv):
                 driver.switch_to.window(original_window)
             
             try:
-                if(count > 10):
+                if(count > 100):
                     break
                 page_number += 1
                 next_button = WebDriverWait(driver, 10).until(
