@@ -242,9 +242,9 @@ def scrape_video(driver, url, output_csv):
 
             # Loop through each video
             for index, video in enumerate(video_rows, start=1):
-                count += 1
-                if count >  100:
-                    break
+                # count += 1
+                # if count >  100:
+                #     break
                 #print(f'Processing video: {count}')
                 # Wait for the spinner to disappear before clicking the video product row
                 try:
@@ -289,8 +289,8 @@ def scrape_video(driver, url, output_csv):
                 driver.switch_to.window(original_window)
 
             try:
-                if count >  100:
-                    break
+                # if count >  100:
+                #     break
                 page_number += 1
                 next_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, "//li[@title='Next Page' and @class='ant-pagination-next']/button"))
