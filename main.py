@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from selenium import webdriver
+import time
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
@@ -13,6 +14,11 @@ from videos import scrape_video, scrape_video_details
 from shops import scrape_shop_details, scrape_shop
 
 load_dotenv()
+
+def log_time(func_name, start_time):
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"{func_name} took {elapsed_time:.2f} seconds.")
 
 def main():
     service = Service(os.getenv("PATH_TO_CHROMEDRIVER"))
@@ -38,19 +44,36 @@ def main():
         print("attempted login")
         attempt_login(driver)
 
-        print("started scraping")
-        scrape_category(driver, 'https://www.kalodata.com/category', "Categories.csv")
-
-        scrape_shop(driver, 'https://www.kalodata.com/shop', "Shops.csv")
-
-        scrape_video(driver, 'https://www.kalodata.com/video', "Videos.csv")
-
-        scrape_creators(driver, 'https://www.kalodata.com/creator', "Creators.csv")
-
+        # Start timing each scrape function
+        print("started scraping live streams")
+        start_time = time.time()  # Start timing
         scrape_live_streams(driver, 'https://www.kalodata.com/livestream', "Live_Streams.csv")
+        log_time("scrape_live_streams", start_time)
 
+        print("started scraping videos")
+        start_time = time.time()  # Start timing
+        scrape_video(driver, 'https://www.kalodata.com/video', "Videos.csv")
+        log_time("scrape_video", start_time)
+
+        print("started scraping creators")
+        start_time = time.time()  # Start timing
+        scrape_creators(driver, 'https://www.kalodata.com/creator', "Creators.csv")
+        log_time("scrape_creators", start_time)
+
+        print("started scraping products")
+        start_time = time.time()  # Start timing
         scrape_products(driver, 'https://www.kalodata.com/product', "Products.csv")
-        
+        log_time("scrape_products", start_time)
+
+        print("started scraping shops")
+        start_time = time.time()  # Start timing
+        scrape_shop(driver, 'https://www.kalodata.com/shop', "Shops.csv")
+        log_time("scrape_shop", start_time)
+
+        print("started scraping categories")
+        start_time = time.time()  # Start timing
+        scrape_category(driver, 'https://www.kalodata.com/category', "Categories.csv")
+        log_time("scrape_category", start_time)
     finally:
         driver.quit()
         print("closed")
