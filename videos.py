@@ -242,10 +242,10 @@ def scrape_video(driver, url, output_csv):
 
             # Loop through each video
             for index, video in enumerate(video_rows, start=1):
-                # count += 1
+                count += 1
                 # if count >  100:
                 #     break
-                #print(f'Processing video: {count}')
+                print(f'Processing video: {count}')
                 # Wait for the spinner to disappear before clicking the video product row
                 try:
                  # Wait for the spinner to disappear
