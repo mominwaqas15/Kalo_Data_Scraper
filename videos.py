@@ -262,7 +262,7 @@ def scrape_video(driver, url, output_csv):
                 except StaleElementReferenceException:
                     print(f"Stale element at video {count}, trying to re-locate and click.")
                     # Re-locate the product and click again
-                    video_rows = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody')
+                    video_rows = driver.find_elements(By.XPATH, '/html/body/div[1]/div/div[2]/div[1]/div/div[2]/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div/div/div[1]/div/table/tbody/tr')
                     video_rows = video_rows[1:]
                     video = video_rows[index - 1]  # Re-fetch the element
                     video.click()
