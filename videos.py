@@ -10,8 +10,7 @@ from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 
-MAX_RETRIES = 3
-RETRY_DELAY = 5  # seconds
+
 def attempt_login(driver):
     driver.get('https://kalodata.com/login')
 
@@ -276,21 +275,8 @@ def scrape_video(driver, url, output_csv):
                 # Scrape the video details
                 WebDriverWait(driver, 30).until(lambda d: d.execute_script('return document.readyState') == 'complete')
                 video_url = driver.current_url
+
                 
-                if video_url == None:
-                    for attempt in range(1, MAX_RETRIES + 1):
-                        try:
-                            video_url = driver.current_url
-                            print(f"Successfully fetched URL: {video_url}")
-                            break  # Exit the retry loop if successful
-                        except TimeoutException:
-                            print(f"Timeout while trying to fetch the current URL. Attempt {attempt} of {MAX_RETRIES}")
-                            if attempt < MAX_RETRIES:
-                                print(f"Retrying in {RETRY_DELAY} seconds...")
-                                time.sleep(RETRY_DELAY)
-                            else:
-                                print("Max retries reached. Skipping this video.")
-                                video_url = "N/A"
                 try:
                     data = scrape_video_details(driver, video_url, output_csv)
                 except Exception as e:
