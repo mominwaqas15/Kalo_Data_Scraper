@@ -37,6 +37,7 @@ def main():
     chrome_options.add_argument('--no-sandbox')  # Bypass OS security model
     chrome_options.add_argument('--disable-dev-shm-usage')  # Overcome limited resource problems
     chrome_options.add_argument('--disable-gpu')  # Applicable for non-GPU instances
+    chrome_options.add_argument("--disable-images")  # This disables loading images to speed up scraping.
 
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
